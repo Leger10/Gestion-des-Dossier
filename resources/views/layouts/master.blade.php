@@ -33,7 +33,7 @@
         <nav class="navbar-expand-lg fixed-top bg-fonce shadow ">
             <div class="container">
                 <div class="navbar-brand">
-                    <a href="{{ route('accueil') }}"> <img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso">`</a>
+                    <a href="#"> <img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso">`</a>
                     <h5 class="text-white text-left"> <a href="/" style="color:#FFF;">Ministère de l'Administration Territoriale et de la Sécurité</a><br>
                       <small class="text-muted text-ombre ">Direction générale des transmissions et de l'informatique </small>
                     </h5>
