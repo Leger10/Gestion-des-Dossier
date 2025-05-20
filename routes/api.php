@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\DirectionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route; // ✅ Facade correcte
 
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Route; // ✅ Facade correcte
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::get('/directions/{direction}/services', function(App\Models\Direction $direction) {
-    return $direction->services()->get(['id', 'name']);
-});
+
+
+Route::get('/directions/{direction}/services', [ApiController::class, 'getServices'])
+     ->where('direction', '[0-9]+');

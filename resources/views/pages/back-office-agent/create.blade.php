@@ -69,8 +69,12 @@
                         </div>
                     </div>
                 </div>
+ <!-- Section Direction -->
+                <div class="box box-primary" id="direction-section" style="display:{{ old('rattachement_type') == 'direction' ? 'block' : 'none' }};">
+                    <!-- ... contenu existant ... -->
+                </div>
 
-                <!-- Section Service (visible si service sélectionné) -->
+                <!-- Section Service -->
                 <div class="box box-primary" id="service-section" style="display:{{ old('rattachement_type') == 'service' ? 'block' : 'none' }};">
                     <div class="box-header with-border">
                         <h3 class="box-title">Service de rattachement</h3>
@@ -82,7 +86,11 @@
                                 <select class="form-control" id="direction-select" name="parent_direction_id" required>
                                     <option value="">Sélectionner une direction</option>
                                     @foreach ($directions as $direction)
-                                        <option value="{{ $direction->id }}" {{ old('parent_direction_id') == $direction->id ? 'selected' : '' }}>
+                                        <option 
+                                            value="{{ $direction->id }}" 
+                                            {{ old('parent_direction_id') == $direction->id ? 'selected' : '' }}
+                                            data-services="{{ $direction->services->toJson() }}"
+                                        >
                                             {{ $direction->name }}
                                         </option>
                                     @endforeach
@@ -95,9 +103,9 @@
                                 <label>Service (*)</label>
                                 <select class="form-control" id="service-select" name="service_id" required>
                                     <option value="">Sélectionner un service</option>
-                                    @if(old('service_id') && $selectedService = \App\Models\Service::find(old('service_id')))
+                                    @if(old('service_id'))
                                         <option value="{{ old('service_id') }}" selected>
-                                            {{ $selectedService->name }}
+                                            {{\App\Models\Service::find(old('service_id'))->name ?? 'Service inconnu'}}
                                         </option>
                                     @endif
                                 </select>
@@ -135,71 +143,41 @@
 @endsection
 @push('scripts.footer')
 <script>
-    $(document).ready(function() {
-        // Afficher/masquer les sections
-        function toggleSections() {
-            const type = $('input[name="rattachement_type"]:checked').val();
-            $('#direction-section').toggle(type === 'direction');
-            $('#service-section').toggle(type === 'service');
-            
-            // Gestion des champs requis
-            $('#direction_id').prop('required', type === 'direction');
-            $('#parent_direction_id, #service-select').prop('required', type === 'service');
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Éléments du DOM
+    const directionSelect = document.getElementById('direction-select');
+    const serviceSelect = document.getElementById('service-select');
+    const rattachementRadios = document.querySelectorAll('input[name="rattachement_type"]');
 
-        // Initialiser les sections
-        toggleSections();
-        
-        // Écouter les changements de type de rattachement
-        $('input[name="rattachement_type"]').change(toggleSections);
-
-        // Charger les services quand une direction est sélectionnée
-        $('#direction-select').on('change', function() {
-            const directionId = $(this).val();
-            const $serviceSelect = $('#service-select');
-            
-            $serviceSelect.empty().append('<option value="">Sélectionner un service</option>');
-            
-            if (directionId) {
-                $.ajax({
-                    url: `/api/directions/${directionId}/services`,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(services) {
-                        services.forEach(service => {
-                            $serviceSelect.append(
-                                $('<option></option>')
-                                    .val(service.id)
-                                    .text(service.name)
-                            );
-                        });
-                        
-                        // Sélectionner l'ancienne valeur si elle existe
-                        const oldServiceId = "{{ old('service_id') }}";
-                        if (oldServiceId) {
-                            $serviceSelect.val(oldServiceId);
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error('Erreur:', xhr.responseText);
-                        alert('Impossible de charger les services');
-                    }
-                });
-            }
-        });
-
-        // Si une direction est déjà sélectionnée (après erreur de validation)
-        @if(old('parent_direction_id'))
-            $('#direction-select').val("{{ old('parent_direction_id') }}").trigger('change');
-        @endif
-
-        // Datepicker
-        $('.datepicker').datepicker({
-            format: 'dd-mm-yyyy',
-            autoclose: true,
-            todayHighlight: true
+    // Gestion du changement de type de rattachement
+    rattachementRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const isServiceType = this.value === 'service';
+            document.getElementById('service-section').style.display = isServiceType ? 'block' : 'none';
+            document.getElementById('direction-section').style.display = this.value === 'direction' ? 'block' : 'none';
         });
     });
-</script>
 
+    // Gestion du changement de direction
+    directionSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const services = JSON.parse(selectedOption.dataset.services || '[]');
+        
+        // Vider et remplir le select des services
+        serviceSelect.innerHTML = '<option value="">Sélectionner un service</option>';
+        services.forEach(service => {
+            const option = document.createElement('option');
+            option.value = service.id;
+            option.textContent = service.name;
+            option.selected = service.id == "{{ old('service_id') }}";
+            serviceSelect.appendChild(option);
+        });
+    });
+
+    // Initialisation si ancienne valeur existante
+    if("{{ old('parent_direction_id') }}" && "{{ old('rattachement_type') }}" === 'service') {
+        directionSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
 @endpush

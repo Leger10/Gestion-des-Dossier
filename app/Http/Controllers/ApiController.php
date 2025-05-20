@@ -25,4 +25,11 @@ class ApiController extends Controller
             'services' => $services
         ]);
     }
+
+
+   // Dans le contrôleur API
+public function getServices(Direction $direction)
+{
+    return $direction->services()->get(['id', 'name']);
+}
 }

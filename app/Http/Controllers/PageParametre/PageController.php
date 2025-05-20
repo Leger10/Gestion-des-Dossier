@@ -141,21 +141,21 @@ public function accueil()
 
     public function mesServicesAdmin()
     {
-        return $this->getAgentsByRattachement(2, 'rattachement.libelle');
+        return $this->getAgentsByRattachement(2, 'services.libelle');
     }
 
     protected function getAgentsByRattachement($typeId, $libelleField)
     {
-        $query = Agent::with(['userCreate'])
+        $query = Agent::with(['userCreate', 'service'])
             ->where('rattachement_type_id', $typeId)
             ->whereNull('deleted_at');
 
         if ($typeId === 1) {
             $query->join('directions', 'agents.rattachement_zone_id', '=', 'directions.id')
-                  ->addSelect('directions.libelle');
+                  ->addSelect('directions.libelle as direction_libelle');
         } else {
-            $query->join('agents as rattachement', 'agents.rattachement_zone_id', '=', 'rattachement.id')
-                  ->addSelect('rattachement.libelle');
+            $query->join('services', 'agents.rattachement_zone_id', '=', 'services.id')
+                  ->addSelect('services.libelle as service_libelle');
         }
 
         $listeAgent = $query->join('users', 'agents.id_user_create', '=', 'users.id')
@@ -165,8 +165,9 @@ public function accueil()
 
         $id_zone = (string)$typeId;
         $directions = $typeId === 1 ? Direction::all() : null;
+        $services = $typeId === 2 ? Service::all() : null;
 
-        return view('pages.back-office-agent.index', compact('listeAgent', 'id_zone', 'directions'));
+        return view('pages.back-office-agent.index', compact('listeAgent', 'id_zone', 'services', 'directions'));
     }
 
     public function ListeProvincesAjax($id)
@@ -191,117 +192,396 @@ public function accueil()
                    ->count();
     }
 
+//  // ExportController.php
+// public function exportByDirection($direction)
+// {
+//     $agents = Agent::where('direction_id', $direction)->get();
+//     return Excel::download(new AgentsExport($agents), 'agents_direction.xlsx');
+// }
 
- public function exportAgents(Request $request)
-    {
-        $query = $this->buildExportQuery($request);
-        $agents = $query->get();
-        
-        if ($request->format === 'excel') {
-            $filename = $this->generateExportFilename($request);
-            return $this->exportToExcel($agents, $filename);
-        }
-        
-        return response()->json($agents); // Fallback pour d'autres formats
-    }
+// public function exportByService($service)
+// {
+//     $agents = Agent::where('service_id', $service)->get();
+//     return Excel::download(new AgentsExport($agents), 'agents_service.xlsx');
+// }
 
-    protected function buildExportQuery(Request $request)
-    {
-        return Agent::with(['service', 'direction'])
-            ->when($request->export_type === 'direction', function ($q) use ($request) {
-                $q->where('direction_id', $request->direction_id);
-            })
-            ->when($request->export_type === 'service', function ($q) use ($request) {
-                $q->where('service_id', $request->service_id);
-            })
-            ->when($request->export_type === 'statut', function ($q) use ($request) {
-                $q->where('statut', $request->statut);
-            });
-    }
 
-    public function getServices($directionId)
-    {
-        return Service::where('direction_id', $directionId)->get(['id', 'name']);
-    }
 
-    public function exportByDirection($directionId)
-    {
-        $direction = Direction::findOrFail($directionId);
-        $agents = Agent::with(['service', 'direction'])
-                    ->where('direction_id', $directionId)
-                    ->get();
+// public function exportAll()
+// {
+//     $agents = Agent::with(['direction', 'service'])->get();
+    
+//     $filename = 'Tous_les_agents_'.now()->format('Y-m-d').'.xlsx';
+//     return Excel::download(new AgentsExport($agents), $filename);
+// }
 
-        $filename = $this->generateFilename('Direction', $direction->name);
-        return $this->exportToExcel($agents, $filename);
-    }
+// public function exportFiltered(Request $request)
+// {
+//     $query = Agent::with(['direction', 'service']);
 
- 
+//     if ($request->type === 'direction' && $request->direction_id) {
+//         $query->where('direction_id', $request->direction_id);
+//     }
 
-    public function exportAll(Request $request)
-    {
-        $agents = Agent::with(['service', 'direction'])
-                    ->when($request->filled('statut'), fn($q) => $q->where('statut', $request->statut))
-                    ->when($request->filled('direction_id'), fn($q) => $q->where('direction_id', $request->direction_id))
-                    ->when($request->filled('service_id'), fn($q) => $q->where('service_id', $request->service_id))
-                    ->get();
+//     if ($request->type === 'service' && $request->service_id) {
+//         $query->where('service_id', $request->service_id);
+//     }
 
-        $filename = $this->generateFilename('Complet');
-        return $this->exportToExcel($agents, $filename);
-    }
+//     if ($request->type === 'statut' && $request->statut) {
+//         $query->where('statut', $request->statut);
+//     }
 
-    protected function exportToExcel($data, $filename)
-    {
-        return Excel::download(new AgentsExport($data), $filename);
-    }
+//     $agents = $query->get();
 
-    protected function generateExportFilename(Request $request)
-    {
-        $type = $request->export_type;
-        $params = [
-            'direction' => Direction::find($request->direction_id),
-            'service' => Service::find($request->service_id),
-            'statut' => $request->statut
-        ];
+//     if ($agents->isEmpty()) {
+//         return back()->with('error', 'Aucun agent trouvé avec ces critères');
+//     }
 
-        return $this->generateFilename(
-            ucfirst($type),
-            $type === 'direction' ? $params['direction']->name : 
-            ($type === 'service' ? $params['service']->name : $params['statut'])
-        );
-    }
+//     $filename = 'Agents_Filtres_'.now()->format('Y-m-d').'.xlsx';
+//     return Excel::download(new AgentsExport($agents), $filename);
+// }
 
-    protected function generateFilename($type, $name = null)
-    {
-        $base = "Export_Agents_{$type}";
-        $namePart = $name ? '_'.str_replace(' ', '_', $name) : '';
-        $date = now()->format('Y-m-d_H-i-s');
-        
-        return "{$base}{$namePart}_{$date}.xlsx";
-    }
+//     // ... (conservez vos autres méthodes existantes)
 
-    public function exportFiltered(Request $request)
-{
-    // Logique de filtrage spécifique
-    return Excel::download(...);
+//     public function getServices(Direction $direction)
+// {
+//     return response()->json($direction->services()->orderBy('name')->get());
+// }
+
+//     public function getAgentsByDirection($id)
+//     {
+//         $agents = Agent::where('direction_id', $id)->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByService($id)
+//     {
+//         $agents = Agent::where('service_id', $id)->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByDirectionAndService($directionId, $serviceId)
+//     {
+//         $agents = Agent::where('direction_id', $directionId)
+//             ->where('service_id', $serviceId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByDirectionAndServiceAndType($directionId, $serviceId, $typeId)
+//     {
+//         $agents = Agent::where('direction_id', $directionId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByServiceAndType($serviceId, $typeId)
+//     {
+//         $agents = Agent::where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByType($typeId)
+//     {
+//         $agents = Agent::where('rattachement_type_id', $typeId)->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByTypeAndZone($typeId, $zoneId)
+//     {
+//         $agents = Agent::where('rattachement_type_id', $typeId)
+//             ->where('rattachement_zone_id', $zoneId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZone($zoneId)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndType($zoneId, $typeId)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndService($zoneId, $serviceId)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndType($zoneId, $serviceId, $typeId)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirection($zoneId, $serviceId, $typeId, $directionId)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatus($zoneId, $serviceId, $typeId, $directionId, $status)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexe($zoneId, $serviceId, $typeId, $directionId, $status, $sexe)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatricule($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndName($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenom($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaiss($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeService($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploi($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonction($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', $status)
+//             ->where('sexe', $sexe)
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonctionAndStatut($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', 'like', '%' . $status . '%')
+//             ->where('sexe', 'like', '%' . $sexe . '%')
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonctionAndStatutAndCategorie($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction, $categorie)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', 'like', '%' . $status . '%')
+//             ->where('sexe', 'like', '%' . $sexe . '%')
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->where('categorie', 'like', '%' . $categorie . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonctionAndStatutAndCategorieAndGrade($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction, $categorie, $grade)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', 'like', '%' . $status . '%')
+//             ->where('sexe', 'like', '%' . $sexe . '%')
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->where('categorie', 'like', '%' . $categorie . '%')
+//             ->where('grade', 'like', '%' . $grade . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonctionAndStatutAndCategorieAndGradeAndClasse($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction, $categorie, $grade, $classe)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', 'like', '%' . $status . '%')
+//             ->where('sexe', 'like', '%' . $sexe . '%')
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->where('categorie', 'like', '%' . $categorie . '%')
+//             ->where('grade', 'like', '%' . $grade . '%')
+//             ->where('classe', 'like', '%' . $classe . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+//     public function getAgentsByZoneAndServiceAndTypeAndDirectionAndStatusAndSexeAndMatriculeAndNameAndPrenomAndDateNaissAndDatePriseDeServiceAndEmploiAndFonctionAndStatutAndCategorieAndGradeAndClasseAndEchelon($zoneId, $serviceId, $typeId, $directionId, $status, $sexe, $matricule, $name, $prenom, $dateNaiss, $datePriseDeService, $emploi, $fonction, $categorie, $grade, $classe, $echelon)
+//     {
+//         $agents = Agent::where('rattachement_zone_id', $zoneId)
+//             ->where('service_id', $serviceId)
+//             ->where('rattachement_type_id', $typeId)
+//             ->where('direction_id', $directionId)
+//             ->where('statut', 'like', '%' . $status . '%')
+//             ->where('sexe', 'like', '%' . $sexe . '%')
+//             ->where('matricule', 'like', '%' . $matricule . '%')
+//             ->where('nom', 'like', '%' . $name . '%')
+//             ->where('prenom', 'like', '%' . $prenom . '%')
+//             ->whereDate('date_naiss', '=', date($dateNaiss))
+//             ->whereDate('date_prise_de_service', '=', date($datePriseDeService))
+//             ->where('emploi', 'like', '%' . $emploi . '%')
+//             ->where('fonction', 'like', '%' . $fonction . '%')
+//             ->where('categorie', 'like', '%' . $categorie . '%')
+//             ->where('grade', 'like', '%' . $grade . '%')
+//             ->where('classe', 'like', '%' . $classe . '%')
+//             ->where('echelon', 'like', '%' . $echelon . '%')
+//             ->get();
+//         return response()->json($agents);
+//     }
+
+
+    
+// public function exportAgents(Request $request)
+//     {
+//         $query = Agent::query()
+//             ->with(['direction', 'service', 'statut']);
+
+//         // Filtrage par type
+//         switch ($request->type) {
+//             case 'direction':
+//                 $query->whereHas('direction', function($q) use ($request) {
+//                     $q->where('id', $request->direction_id);
+//                 });
+//                 break;
+
+//             case 'service':
+//                 $query->whereHas('service', function($q) use ($request) {
+//                     $q->where('id', $request->service_id);
+//                 });
+//                 break;
+
+//             case 'statut':
+//                 $query->where('statut', $request->statut);
+//                 break;
+//         }
+
+//         return Excel::download(new AgentsExport($query), 'agents.' . $request->format);
+//     }
 }
-public function exportByService($serviceId)
-{
-    try {
-        // Vérifiez s'il y a des agents dans ce service
-        $hasAgents = Agent::where('service_id', $serviceId)->exists();
-        
-        if (!$hasAgents) {
-            return back()->with('error', 'Aucun agent dans ce service');
-        }
 
-        // Retournez l'export Excel
-        return Excel::download(
-            new CsvExport(3, $serviceId), 
-            'agents_par_service_'.$serviceId.'.xlsx'
-        );
-    } catch (\Exception $e) {
-        return back()->with('error', 'Erreur lors de l\'export: '.$e->getMessage());
-    }
-}
-
-}

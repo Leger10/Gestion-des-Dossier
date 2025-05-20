@@ -135,37 +135,28 @@
 					<thead>
 						<tr class="text-white tr-bg">
 							<th>Catégorie</th>
-							<th>P</th>
-							<th>A</th>
-							<th>B</th>
-							<th>C</th>
-							<th>D</th>
-							<th>E</th>
+							<th>I</th>
+							<th>II</th>
+							<th>III</th>
 							<th>?</th>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td><b>Homme</b></td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'P')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'A et assimilés')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'B et assimilés')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'C et assimilés')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'D et assimilés')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'E et assimilés')) }}</td>
-							<td>{{ count($directionHommes->where('categorie', '=', 'Néant')) }}</td>
-						</tr>
-						<tr>
-							<td><b>Femme</b></td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'P')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'A et assimilés')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'B et assimilés')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'C et assimilés')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'D et assimilés')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'E et assimilés')) }}</td>
-							<td>{{count($directionFemmes->where('categorie', '=', 'Néant')) }}</td>
-						</tr>
-					</tbody>
+				<tbody>
+    <tr>
+        <td><b>Homme</b></td>
+        <td>{{ count($directionHommes->where('categorie', '=', 'I')) }}</td>
+        <td>{{ count($directionHommes->where('categorie', '=', 'II')) }}</td>
+        <td>{{ count($directionHommes->where('categorie', '=', 'III')) }}</td>
+        <td>{{ count($directionHommes->where('categorie', '=', 'Néant')) }}</td>
+    </tr>
+    <tr>
+        <td><b>Femme</b></td>
+        <td>{{ count($directionFemmes->where('categorie', '=', 'I')) }}</td>
+        <td>{{ count($directionFemmes->where('categorie', '=', 'II')) }}</td>
+        <td>{{ count($directionFemmes->where('categorie', '=', 'III')) }}</td>
+        <td>{{ count($directionFemmes->where('categorie', '=', 'Néant')) }}</td>
+    </tr>
+</tbody>
 				</table>
 			</div>
 
@@ -182,35 +173,28 @@
 					<thead>
 						<tr class="text-white tr-bg">
 							<th>Catégorie</th>
-							<th>P</th>
-							<th>A</th>
-							<th>B</th>
-							<th>C</th>
-							<th>D</th>
-							<th>E</th>
+							<th>I</th>
+							<th>II</th>
+							<th>III</th>
 							<th>?</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
 							<td><b>Homme</b></td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'P')) }}</td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'A et assimilés')) }}</td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'B et assimilés')) }}</td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'C et assimilés')) }}</td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'D et assimilés')) }}</td>
-							<td>{{ count($serviceHommes->where('categorie', '=', 'E et assimilés')) }}</td>
+							<td>{{ count($serviceHommes->where('categorie', '=', 'I')) }}</td>
+							<td>{{ count($serviceHommes->where('categorie', '=', 'II')) }}</td>
+							<td>{{ count($serviceHommes->where('categorie', '=', 'III')) }}</td>
 							<td>{{ count($serviceHommes->where('categorie', '=', 'Néant')) }}</td>
+
 						</tr>
 						<tr>
 							<td><b>Femme</b></td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'P')) }}</td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'A et assimilés')) }}</td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'B et assimilés')) }}</td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'C et assimilés')) }}</td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'D et assimilés')) }}</td>
-							<td>{{ count($serviceFemmes->where('categorie', '=', 'E et assimilés')) }}</td>
+							<td>{{ count($serviceFemmes->where('categorie', '=', 'I')) }}</td>
+							<td>{{ count($serviceFemmes->where('categorie', '=', 'II')) }}</td>
+							<td>{{ count($serviceFemmes->where('categorie', '=', 'III')) }}</td>
 							<td>{{ count($serviceFemmes->where('categorie', '=', 'Néant')) }}</td>
+							
 						</tr>
 					</tbody>
 				</table>

@@ -13,10 +13,17 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class AgentsExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
     protected $agents;
+ protected $query;
 
-    public function __construct($agents)
+    public function __construct($agents, $query = null)
     {
         $this->agents = $agents;
+        $this->query = $query;
+    }
+
+    public function query()
+    {
+        return $this->query;
     }
 
     public function collection()

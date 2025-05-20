@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ParametreAdmin\AdminAgentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,41 +85,88 @@ Route::get('dashbord/editer/utilisateur/{id}', 'PageParametre\PageDashbordContro
 
 Route::post('dashbord/update/utilisateur{id}', 'PageParametre\PageDashbordController@userUpadate')->name('dashbord.user_upadate');
 
+});
+
+  Route::get('/export/agents', [ExportController::class, 'exportAgents'])
+     ->name('export.agents');
+
+// Routes d'export
 Route::prefix('export')->name('export.')->group(function() {
     // Export par direction
     Route::get('/direction/{direction}', [PageController::class, 'exportByDirection'])
-         ->name('direction'); // Nom complet sera 'export.direction'
-    
+         ->name('direction');
+
+Route::get('/export-directions', [ExportController::class, 'exportDirection'])
+     ->name('export.directions');
     // Export par service
     Route::get('/service/{service}', [PageController::class, 'exportByService'])
-         ->name('service'); // Nom complet sera 'export.service'
-    // Utilisez :
-Route::get('/export/filter', [PageController::class, 'exportByService']);
-    // Export avec filtres
+         ->name('service');
+
+    Route::get('/all', [PageController::class, 'exportAll'])
+         ->name('all');
+
     Route::get('/filter', [PageController::class, 'exportFiltered'])
-         ->name('filter'); // Nom complet sera 'export.filter'
+         ->name('filter');
+});
+// Routes agents
+Route::resource('agent', AdminAgentController::class);
+
+
+
+
+// Groupe des routes d'export
+Route::prefix('export')->name('export.')->group(function() {
+    
+    // Export global
+    Route::get('/agents', [ExportController::class, 'exportAgents'])
+         ->name('agents'); // export.agents
+
+    // Export par direction
+    Route::get('/direction/{direction}', [ExportController::class, 'exportByDirection'])
+         ->name('direction'); // export.direction
+
+    // Export par service
+    Route::get('/service/{service}', [ExportController::class, 'exportByService'])
+         ->name('service'); // export.service
+
+    // Export filtré (multiple critères)
+    Route::get('/filter', [ExportController::class, 'exportFiltered'])
+         ->name('filter'); // export.filter
+
+    // Export tous les agents (si nécessaire)
+    Route::get('/all', [ExportController::class, 'exportAll'])
+         ->name('all'); // export.all
 });
 
-});
+// Routes admin
 Route::prefix('admin')->group(function() {
-    Route::resource('directions', 'DirectionController');
-    Route::resource('services', 'ServiceController');
+    Route::resource('directions', DirectionController::class);
+    Route::resource('services', ServiceController::class);
+    Route::get('/regions', [PageController::class, 'mesDirectionsAdmin'])
+         ->name('admin.regions');
 });
-Route::get('/admin/regions', [PageController::class, 'mesDirectionsAdmin']);
-// Route::get('/admin/communes', [PageController::class, 'mesServicesAdmin']);
+// routes/api.php
+Route::get('/directions/{direction}/services', [DirectionController::class, 'getServices']);
 
-// Route::prefix('admin')->group(function() {
-//     Route::get('/agents/export', 'AgentController@exportAll')->name('agents.export');
-//     Route::get('/agents/export/direction/{id}', 'AgentController@exportByDirection')->name('agents.export.direction');
-//     Route::get('/agents/export/service/{id}', 'AgentController@exportByService')->name('agents.export.service');
+// Route::prefix('export')->name('export.')->group(function() {
+//     // Export par direction
+//     Route::get('/direction/{direction}', [ExportController::class, 'exportByDirection'])
+//          ->name('direction');
+    
+//     // Export par service
+//     Route::get('/service/{service}', [ExportController::class, 'exportByService'])
+//          ->name('service');
+
+//     // Export complet
+//     Route::get('/all', [ExportController::class, 'exportAll'])
+//          ->name('all');
+
+    // Export filtré
+//     Route::get('/filter', [ExportController::class, 'exportFiltered'])
+//          ->name('filter');
 // });
 
-
 // API pour charger les services
-// Supprimez toutes les définitions existantes de ces routes
-// Puis ajoutez ceci :
+Route::get('/directions/{direction}/services', [ApiController::class, 'getServicesByDirection'])
+     ->name('api.directions.services');
 
-
-Route::get('/directions/{direction}/services', [ApiController::class, 'getServicesByDirection']);
-     
-Route::resource('agent', \App\Http\Controllers\ParametreAdmin\AdminAgentController::class);

@@ -61,7 +61,18 @@
             <input type="text" class="form-control" name="grade" value="{{ old('grade') }}" required>
             {!! $errors->first('grade', '<span class="error text-error">:message</span>') !!}
         </div>
-
+<div class="form-group">
+    <label>Catégorie (*)</label>
+    <select class="form-control" name="categorie" required>
+        <option value="">Sélectionner...</option>
+        @foreach(['I', 'II', 'III', 'Néant'] as $categorie)
+            <option value="{{ $categorie }}" {{ old('categorie') == $categorie ? 'selected' : '' }}>
+                {{ $categorie }}
+            </option>
+        @endforeach
+    </select>
+    {!! $errors->first('categorie', '<span class="error text-error">:message</span>') !!}
+</div>
         <div class="form-group">
             <label>Échelon (*)</label>
             <select class="form-control" name="echelon" required>

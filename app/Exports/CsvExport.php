@@ -81,6 +81,16 @@ class CsvExport implements FromQuery, WithHeadings, WithMapping
 
     public function map($agent): array
     {
+
+        // Chargez les relations si elles ne sont pas déjà chargées
+    if (!$agent->relationLoaded('direction')) {
+        $agent->load('direction');
+    }
+    if (!$agent->relationLoaded('service')) {
+        $agent->load('service');
+    }
+        // Formatez les données pour l'exportation
+
         return [
             $agent->nom,
             $agent->prenom,
@@ -108,4 +118,7 @@ class CsvExport implements FromQuery, WithHeadings, WithMapping
             $agent->autre_situation
         ];
     }
+
+
+    
 }

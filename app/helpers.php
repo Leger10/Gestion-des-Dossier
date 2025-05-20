@@ -80,23 +80,25 @@ if (!function_exists('sousActivites')) {
     }
 }
 
-if (!function_exists('situationParticuliaires')) {
-    function situationParticuliaires() {
-        return collect([
-            'Néant',
-            "Agent formé dans les IRA (concerné par la subvention de l'État sur la période 1er juillet 2013 - 30 juin 2020)",
-            "Agent des provinces ex CT redéployées (salaire pris en charge par la CT)",
-            "Agent des provinces ex CT redéployées (salaire pris en charge par l'État)",
-            'Autres'
-        ]);
-    }
-}
+// if (!function_exists('situationParticuliaires')) {
+//     function situationParticuliaires() {
+//         return collect([
+//             'Néant',
+//             "Agent formé dans les IRA (concerné par la subvention de l'État sur la période 1er juillet 2013 - 30 juin 2020)",
+//             "Agent des provinces ex CT redéployées (salaire pris en charge par la CT)",
+//             "Agent des provinces ex CT redéployées (salaire pris en charge par l'État)",
+//             'Autres'
+//         ]);
+//     }
+// }
 
 if (!function_exists('categories')) {
     function categories() {
-        return collect(['P', 'A et assimilés', 'B et assimilés', 'C et assimilés', 'D et assimilés', 'E et assimilés', 'Néant']);
+        return collect(['I', 'II', 'III', 'Autres']);
     }
 }
+
+
 
 if (!function_exists('echelles')) {
     function echelles() {

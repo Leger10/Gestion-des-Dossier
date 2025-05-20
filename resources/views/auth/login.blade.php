@@ -6,9 +6,7 @@
             <div class="col-md-6 mt-md-0 mt-3">
                 <div class="welcome-container">
     <div class="text-3d">
-        <span class="letter" data-letter="A">A</span>
-        <span class="letter" data-letter="p">p</span>
-        <span class="letter" data-letter="p">p</span>
+       
         <!-- Continuez pour chaque lettre -->
         <span class="letter" data-letter="D">D</span>
         <span class="letter" data-letter="G">G</span>

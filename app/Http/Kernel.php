@@ -60,6 +60,7 @@ class Kernel extends HttpKernel
     'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class, // Assurez-vous que cette ligne existe
     'user' => \App\Http\Middleware\Utilisateur::class,
     'admin' => \App\Http\Middleware\Administrateur::class,
+                \Illuminate\Http\Middleware\HandleCors::class, 
     /*
      * Autres middlewares désactivés
      *

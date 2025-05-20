@@ -21,7 +21,7 @@ if (!function_exists('directions')) {
     function directions()
     {
         $regions = Direction::all();
-        return $directions;
+        return $regions;
     }
 }
 
@@ -109,12 +109,12 @@ if (!function_exists('situationParticuliaires')) {
 }
 
 if (!function_exists('categories')) {
-    function categories()
-    {
-        $categories = collect(['P', 'A et assimilés', 'B et assimilés', 'C et assimilés','D et assimilés','E et assimilés','Néant']);
-        return $categories;
+    function categories() {
+        return collect(['I', 'II', 'III', 'Autres']);
     }
 }
+
+
 
 if (!function_exists('echelles')) {
     function echelles()

@@ -100,5 +100,110 @@
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
         @stack('scripts.footer')
+
+ <!-- Modal d'information amélioré -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-indigo text-white py-3">
+        <h5 class="modal-title font-weight-bold" id="infoModalLabel" style="letter-spacing: 1px;">
+          <i class="fas fa-folder-open mr-2"></i>DOSSIER INDIVIDUEL DU POLICIER
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
+      <div class="modal-body py-4" style="line-height: 1.8;">
+        <div class="alert alert-light-blue mb-4">
+          <p class="mb-0 text-dark">
+            <i class="fas fa-info-circle mr-2 text-indigo"></i>
+            Document administratif officiel contenant l'historique complet de la carrière policière.
+          </p>
+        </div>
+
+        <h5 class="text-indigo mb-3 font-weight-bold">
+          <i class="fas fa-file-alt mr-2"></i>Composition du dossier :
+        </h5>
+        
+        <ul class="list-unstyled">
+          <li class="mb-3 pl-4 position-relative">
+            <i class="fas fa-check-circle text-success position-absolute" style="left: 0; top: 4px;"></i>
+            Actes de <strong class="text-primary">nomination</strong> et d'<strong class="text-primary">affectation</strong>
+          </li>
+          <li class="mb-3 pl-4 position-relative">
+            <i class="fas fa-check-circle text-success position-absolute" style="left: 0; top: 4px;"></i>
+            Décisions de <strong class="text-primary">bonification d'échelon</strong>
+          </li>
+          <li class="mb-3 pl-4 position-relative">
+            <i class="fas fa-check-circle text-success position-absolute" style="left: 0; top: 4px;"></i>
+            <strong class="text-primary">Fiches d'évaluation</strong> périodiques
+          </li>
+          <li class="mb-3 pl-4 position-relative">
+            <i class="fas fa-check-circle text-success position-absolute" style="left: 0; top: 4px;"></i>
+            Dossier des <strong class="text-primary">sanctions disciplinaires</strong>
+          </li>
+          <li class="mb-4 pl-4 position-relative">
+            <i class="fas fa-check-circle text-success position-absolute" style="left: 0; top: 4px;"></i>
+            <strong class="text-primary">Récompenses</strong> et distinctions honorifiques
+          </li>
+        </ul>
+
+        <div class="callout bg-light-indigo p-4 rounded">
+          <h5 class="text-dark mb-3">
+            <i class="fas fa-shield-alt mr-2 text-indigo"></i>Votre attention est importante :
+          </h5>
+          <p class="mb-0 text-dark">
+            Ce dossier constitue la mémoire officielle de votre carrière. 
+            <span class="d-block mt-2">
+              Veillez à <strong class="text-indigo">vérifier régulièrement</strong> son exactitude et 
+              <strong class="text-indigo">signaler</strong> toute anomalie.
+            </span>   <span class="d-block "> Veuillez fermer cette fenètre et connectez-vous a la plateforme.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+          <i class="fas fa-times mr-2"></i>Fermer
+        </button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.bg-indigo {
+  background-color: #3f51b5 !important;
+}
+
+.bg-light-indigo {
+  background-color: #e8eaf6 !important;
+}
+
+.text-indigo {
+  color: #3f51b5 !important;
+}
+
+.modal-content {
+  border: 2px solid rgba(63, 81, 181, 0.1);
+  border-radius: 0.5rem;
+}
+
+.modal-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.callout {
+  border-left: 4px solid #3f51b5;
+}
+</style>
+<script>
+    $(document).ready(function () {
+        $('#infoModal').modal('show');
+    });
+</script>
+
 </body>
 </html>

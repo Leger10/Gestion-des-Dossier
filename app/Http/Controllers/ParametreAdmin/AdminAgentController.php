@@ -28,6 +28,7 @@ class AdminAgentController extends Controller
      */
     public function create()
     {
+         $directions = \App\Models\Direction::with('services')->get();
         $directions = Direction::orderBy('name')->get();
         $services = Service::orderBy('name')->get();
         $rattachementTypes = DB::table('rattachement_types')->get();
