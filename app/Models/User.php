@@ -55,10 +55,11 @@ class User extends Authenticatable
     /**
      * Vérifie si l'utilisateur est administrateur
      */
-    public function isAdmin(): bool
-    {
-        return $this->role->name === 'Administrateur';
-    }
+    // Dans app/Models/User.php
+public function isAdmin()
+{
+    return $this->role === 'admin'; // Adaptez selon votre logique de rôle
+}
 
     /**
      * Vérifie si l'utilisateur est superviseur

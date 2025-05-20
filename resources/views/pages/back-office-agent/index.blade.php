@@ -2,165 +2,192 @@
 @section('content')
 
     @include('partials.back-admin._nav')
-    {{-- -----End menu--------- --}}
+    
     <div class="content-wrapper">
-    <section class="content-header">
-        <h1>Direction générale des collectivités territoriales</h1>
-        <ol class="breadcrumb">
-        <li class="active"><i class="fa fa-dashboard"></i> Accueil</li>
-        @if ($id_zone === '1')
-        <li class="active"><i class="fa fa-file-text-o"></i> <b><strong>Liste agents des régions</strong></b></li>
-        @else
-        <li class="active"><i class="fa fa-file-text-o"></i> <b><strong>Liste agents des communes</strong></b></li>
-        @endif
-        </ol>
-    </section>
-    <section class="content">
-        
-        @include('partials._title')
-        @include('partials._notification')
+        <section class="content-header">
+            <h1>Direction générale des collectivités territoriales</h1>
+            <ol class="breadcrumb">
+                <li class="active"><i class="fa fa-dashboard"></i> Accueil</li>
+                <li class="active"><i class="fa fa-users"></i> Gestion des agents</li>
+            </ol>
+        </section>
 
-        @if ($listeAgent->count() > 0)
-        <div class="row">
+        <section class="content">
+            @include('partials._notification')
+
+            <div class="row">
                 <div class="col-md-12">
-                    @if (Auth::user()->is_admin === 1)
                     <div class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Choississez la localité à exporter</h3>
+                            <h3 class="box-title">Structures organisationnelles</h3>
+                            <div class="box-tools pull-right">
+                                <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#exportModal">
+                                    <i class="fa fa-download"></i> Exporter les agents
+                                </button>
+                            </div>
                         </div>
-                        <div class="box-body" >
-                            <div class="col-md-12">
-                                <div class="col-md-12 col-offset-md-3">
-                                    @switch($id_zone)
-                                        @case(1)
-                                            <form action="{{route('export.region')}}" method="post">
-                                                @csrf
-                                                <div class="form-group">
-                                                    <select name="region" class="form-control" id="region" name="region" >
-                                                        <option value="" selected disabled>Choisissez le type de téléchargement</option>
-                                                        <option style="font-size: 1pt; background-color: #000000;" disabled>&nbsp;</option>
-                                                        <option value="TOUTES LES REGIONS" >TOUTES LES REGIONS CT</option>
-                                                        <option class="dropdown-divider" disabled>&nbsp;</option>
-                                                        <option style="font-size: 1pt; background-color: #000000;" disabled>&nbsp;</option>
-                                                        <option disabled>Sélectionner une région</option>
-                                                        <option class="dropdown-divider" disabled>&nbsp;</option>
-                                                        @foreach ($regions as  $region)
-                                                        <option value="{{$region->id}}" >{{$region->libelle}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-info pull-right">Exporter la liste</button>
-                                            </form>
-                                            @break
-                                        @case(2)
-                                            <form action="{{route('export.commune')}}" method="post">
-                                                @csrf
-                                                <div class="form-group">
-                                                    <select class="form-control" id="collectivite" name="collectivite">
-                                                        <option value="" selected disabled>Choisissez le type de téléchargement</option>
-                                                        <option style="font-size: 1pt; background-color: #000000;" disabled>&nbsp;</option>
-                                                        <option >TOUTES LES COMMNUNES</option>
-                                                        <option class="dropdown-divider" disabled>&nbsp;</option>
-                                                        <option style="font-size: 1pt; background-color: #000000;" disabled>&nbsp;</option>
-                                                        <option value="" selected disabled>Sélectionner la collectivité</option>
-                                                        <option class="dropdown-divider" disabled>&nbsp;</option>
-                                                        @foreach ($collectivites as  $collectivite)
-                                                        <option value="{{$collectivite->id}}" >{{$collectivite->libelle}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <button class="btn btn-info pull-right">Exporter la liste</button>
-                                            </form>
-                                            {{-- <a href="{{route('export.commune')}}" class="btn btn-info pull-right">Exporter la liste </a> --}}
-                                            @break
-                                        @default
-                                    @endswitch
+                        
+                        <div class="box-body">
+                            <div class="row">
+                                @foreach($directions as $direction)
+                                <div class="col-md-4">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">
+                                                <i class="fa fa-building"></i> {{ $direction->name }}
+                                                <span class="badge bg-light-blue pull-right">
+                                                    {{ $direction->agents_count }} agents
+                                                </span>
+                                            </h3>
+                                        </div>
+                                        <div class="panel-body" style="padding:0;">
+                                            <ul class="list-group">
+                                                @forelse($direction->services as $service)
+                                                <li class="list-group-item">
+                                                    <i class="fa fa-folder"></i> {{ $service->name }}
+                                                    <span class="badge bg-blue pull-right">
+                                                        {{ $service->agents_count }} agents
+                                                    </span>
+                                                    <div class="pull-right" style="margin-right: 10px;">
+                                                        <a href="{{ route('export.service', $service->id) }}" 
+                                                           class="btn btn-xs btn-info" 
+                                                           title="Exporter ce service">
+                                                            <i class="fa fa-download"></i>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                                @empty
+                                                <li class="list-group-item text-muted">Aucun service</li>
+                                                @endforelse
+                                            </ul>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <a href="{{ route('export.direction', $direction->id) }}" 
+                                               class="btn btn-xs btn-primary" 
+                                               title="Exporter cette direction">
+                                                <i class="fa fa-download"></i> Exporter la direction
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
-                    @endif
                 </div>
             </div>
 
-            <div class="box">
-                <div class="box-header">
-
-                @if ($id_zone === '1')
-                <h3 class="box-title">Enregistrement des Agents des Régions CT</h3>
-                @elseif ($id_zone === '2')
-                <h3 class="box-title">Enregistrement des Agents des Communes </h3>
-                @else
-                <h3 class="box-title">La Liste Des Agents De La Collectivité Territoriale Enregistré</h3>
-                @endif
-                </div>
-
-                <div class="box-body">
-
-                    <table id="example" class="table table-hover table-striped" style="width:100%">
-                        <thead>
-                            <tr class="text-white tr-bg">
-                                <th>N°</th>
-                                <th>Nom complet</th>
-                                <th>Sexe</th>
-                                <th>Matricule</th>
-                                <th>Emploi</th>
-                                <th>Statut</th>
-                                <th>Localité</th>
-                                @if (Auth::user()->is_admin === 1)
-                                <th>Agent crée par </th>
-                                @endif
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <div style="display:none;">{{$n=1}}</div>
-                            @foreach ($listeAgent as $agent)
-                            <tr >
-                                <td > <b>{{$n++}}</b></td>
-                                <td >{{$agent->nom}} {{$agent->prenom}}</td>
-                                <td>{{ucwords($agent->sexe)}}</td>
-                                <td>{{$agent->matricule}}</td>
-                                <td>{{ucfirst(strtolower($agent->emploi))}}</td>
-                                <td>{{$agent->statut}}</td>
-                                <td>{{$agent->libelle}}</td>
-                                @if (Auth::user()->is_admin === 1)
-                                <td>{{$agent->name}}<br>{{$agent->email}}</td>
-                                @endif
-                                <td><a href="{{route('agent.show', $agent->id)}}" title="Voir information de l'agent"class="btn btn-info pull-right"><i class="fa fa-eye"></i></a></td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    
-                </div>
-            </div>
-        @else
-
-        <div class="row">
-                <div class="col-md-12">
-
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h4><i class="icon fa fa-info"></i> Alert!</h4>
-                        <h3><p class="text-center">Aucun agent trouvé !</p></h3>
+            <!-- Modal d'export -->
+            <div class="modal fade" id="exportModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form id="exportForm" method="GET" action="{{ route('export.filter') }}">
+                            @csrf
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title">Options d'export</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Type d'export</label>
+                                    <select class="form-control" name="type" id="exportType">
+                                        <option value="all">Tous les agents</option>
+                                        <option value="direction">Par direction</option>
+                                        <option value="service">Par service</option>
+                                        <option value="statut">Par statut</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="directionField" style="display:none;">
+                                    <label>Direction</label>
+                                    <select class="form-control" name="direction_id">
+                                        @foreach($directions as $direction)
+                                        <option value="{{ $direction->id }}">{{ $direction->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="serviceField" style="display:none;">
+                                    <label>Service</label>
+                                    <select class="form-control" name="service_id">
+                                        <option value="">Choisir un service</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group" id="statutField" style="display:none;">
+                                    <label>Statut</label>
+                                    <select class="form-control" name="statut">
+                                        <option value="Actif">Actif</option>
+                                        <option value="Inactif">Inactif</option>
+                                        <option value="En congé">En congé</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Format</label>
+                                    <select class="form-control" name="format">
+                                        <option value="xlsx">Excel (.xlsx)</option>
+                                        <option value="csv">CSV (.csv)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-download"></i> Exporter
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
                 </div>
-
-              </div>
-        @endif
-
-    </section>
+            </div>
+        </section>
     </div>
 @endsection
-@push('scripts.footer')
-<script type="text/javascript" src="{{asset('js/jquery.dataTables.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/dataTables.bootstrap.min.js')}}"></script>
+
+@push('scripts')
 <script>
 $(document).ready(function() {
-    $('#example').DataTable();
-} );
+    // Gestion dynamique des champs
+    $('#exportType').change(function() {
+        $('#directionField, #serviceField, #statutField').hide();
+        
+        switch($(this).val()) {
+            case 'direction':
+                $('#directionField').show();
+                break;
+            case 'service':
+                $('#directionField, #serviceField').show();
+                loadServices($('#directionField select').val());
+                break;
+            case 'statut':
+                $('#statutField').show();
+                break;
+        }
+    });
+
+    // Chargement des services en fonction de la direction
+    $('#directionField select').change(function() {
+        if ($('#exportType').val() === 'service') {
+            loadServices($(this).val());
+        }
+    });
+
+    function loadServices(directionId) {
+        $.get('/api/directions/' + directionId + '/services', function(data) {
+            const $select = $('#serviceField select');
+            $select.empty().append('<option value="">Choisir un service</option>');
+            
+            $.each(data, function(key, service) {
+                $select.append($('<option>', {
+                    value: service.id,
+                    text: service.name
+                }));
+            });
+        });
+    }
+});
 </script>
 @endpush

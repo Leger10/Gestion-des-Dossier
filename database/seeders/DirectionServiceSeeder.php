@@ -9,23 +9,89 @@ class DirectionServiceSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            'DGTI' => ['Secretariat particulier', 'SAF', 'SSECU'],
-            'DT'   => ['STR', 'ST', 'SVP'],
-            'DSI'  => ['SRS', 'SID', 'SES', 'USI'],
-            'DIG'  => ['SIGT', 'SPCTG'],
-            'DESF' => ['SEAT', 'SFPP', 'SVIT'],
-            'DASP' => ['SPPC', 'SQSSI'],
+        $directions = [
+            [
+                'name' => 'DGTI',
+                'description' => 'Direction Générale des Transmissions et de l\'Information',
+                'services' => [
+                    ['name' => 'Secrétariat Particulier', 'short' => 'SP'],
+                    ['name' => 'Service Administratif et Financier', 'short' => 'SAF'],
+                    ['name' => 'Service de Sécurité', 'short' => 'SS']
+                ]
+            ],
+            [
+                'name' => 'DT',
+                'description' => 'Direction des transmissions',
+                'services' => [
+                    ['name' => 'Service des transmissions radio', 'short' => 'STR'],
+                    ['name' => 'Service de la téléphonie', 'short' => 'ST'],
+                    ['name' => 'Service de vidéo protection', 'short' => 'SVP']
+                ]
+            ],
+            [
+                'name' => 'DSI',
+                'description' => 'Direction des Systèmes d\'Information',
+                'services' => [
+                    ['name' => 'Service des Réseaux et Systèmes', 'short' => 'SRS'],
+                    ['name' => 'Service ingénierie de développement', 'short' => 'SID'],
+                    ['name' => 'Service de l\'exploitation et support', 'short' => 'SES'],
+                    ['name' => 'Urbaniste des systèmes d\'information', 'short' => 'USI']
+                ]
+            ],
+            [
+                'name' => 'DESF',
+                'description' => 'Direction des études, stratégie et formation',
+                'services' => [
+                    ['name' => 'Service des études et analyse technique', 'short' => 'SEAT'],
+                    ['name' => 'Service de la formation professionnelle', 'short' => 'SFP'],
+                    ['name' => 'Service de veille et innovation technologique', 'short' => 'SVIT']
+                ]
+            ],
+            [
+                'name' => 'DIG',
+                'description' => 'Direction de l\'information géographique',
+                'services' => [
+                    ['name' => 'Service information géographique et télédétection', 'short' => 'SIGT'],
+                    ['name' => 'Service production cartographique et géolocalisation', 'short' => 'SPCTG']
+                ]
+            ],
+            [
+                'name' => 'DASP',
+                'description' => 'Direction administration et suivi des programmes',
+                'services' => [
+                    ['name' => 'Service programme planification et capitalisation', 'short' => 'SPPC'],
+                    ['name' => 'Service qualité et sécurité des systèmes', 'short' => 'SQSS']
+                ]
+            ],
+            [
+                'name' => 'ARTI',
+                'description' => 'Antennes régionales transmissions et informatique',
+                'services' => [
+                    ['name' => 'ARTI Nord', 'short' => 'ARTI-N'],
+                    ['name' => 'ARTI Sud-ouest', 'short' => 'ARTI-SO'],
+                    ['name' => 'ARTI Centre', 'short' => 'ARTI-C'],
+                    ['name' => 'ARTI Centre-Ouest', 'short' => 'ARTI-CO'],
+                    ['name' => 'ARTI Est', 'short' => 'ARTI-E'],
+                    ['name' => 'ARTI Centre-sud', 'short' => 'ARTI-CS'],
+                    ['name' => 'ARTI Sahel', 'short' => 'ARTI-S'],
+                    ['name' => 'ARTI Sud-est', 'short' => 'ARTI-SE']
+                ]
+            ]
         ];
 
-        foreach ($data as $directionName => $services) {
-            $direction = Direction::firstOrCreate(['name' => $directionName]);
+        foreach ($directions as $directionData) {
+            $direction = Direction::updateOrCreate(
+                ['name' => $directionData['name']],
+                ['description' => $directionData['description']]
+            );
 
-            foreach ($services as $serviceName) {
-                Service::firstOrCreate([
-                    'name' => $serviceName,
-                    'direction_id' => $direction->id
-                ]);
+            if (isset($directionData['services'])) {
+                foreach ($directionData['services'] as $serviceData) {
+                    $direction->services()->updateOrCreate(
+                        ['name' => $serviceData['name']],
+                        ['short_name' => $serviceData['short']]
+                    );
+                }
             }
         }
     }

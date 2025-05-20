@@ -13,7 +13,7 @@
         </ol>
     </section>
 
-   @if(auth()->check() && auth()->user()->role_id)
+
 
         <section class="content">
             @include('partials._title')
@@ -286,10 +286,10 @@
                 </div>
             </div>
         </section>
-    @else 
+   
         <div class="alert alert-danger">
             <strong>Accès refusé !</strong> Vous n'avez pas la permission d'accéder à cette page.
         </div>  
-    @endif 
+   
 </div>
 @endsection

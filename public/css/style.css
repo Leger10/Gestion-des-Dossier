@@ -21,7 +21,7 @@ a:hover{text-decoration: none}
 
   nav .nav-link img {height: 23px; position: absolute; right: 100px; padding-top: 0 !important;}
   footer img {height: 80px; padding-right: 15px}
-  .bordure{border:1px solid red !important}
+  .bordure{border:1px solid rgba(29, 4, 4, 0.151) !important}
 
   .display-5{font-weight:300;line-height:1.2}
   .display-5{font-size:3rem}

@@ -6,27 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('roles', function (Blueprint $table) {
-    $table->id();
-    $table->string('name')->unique();
-    $table->timestamps();
-});
+            $table->id(); // bigint unsigned auto-increment
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
+        // Désactiver temporairement les contraintes pour éviter les erreurs de suppression
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('roles');
+        Schema::enableForeignKeyConstraints();
     }
 };

@@ -38,12 +38,12 @@
         {{--  @if (Auth::user()->is_admin === 1)  --}}
         <li class="header">MES AGENTS SAISIS</li>
        <li>
-            <a href="{{route('mesRegionsAdmin')}}">
+            <a href="{{route('mesDirectionsAdmin')}}">
             <i class="fa fa-th"></i> <span>Mes servives par directions</span>
             </a>
         </li>
         <li>
-            <a href="{{route('mesCommuneSaisirent')}}">
+            <a href="#">
             <i class="fa fa-th"></i> <span>Personnels par directions</span>
             </a>
         </li>

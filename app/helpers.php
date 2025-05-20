@@ -14,8 +14,8 @@ if (!function_exists('flash')) {
     }
 }
 
-if (!function_exists('regions')) {
-    function regions() {
+if (!function_exists('directions')) {
+    function directions() {
         return Direction::all();
     }
 }

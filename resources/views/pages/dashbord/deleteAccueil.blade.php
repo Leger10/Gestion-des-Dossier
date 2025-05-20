@@ -30,12 +30,12 @@
             <div class="row">
                 <div class="col-md-6">
                         <div class="div2">
-                                <a href="{{route('regions')}}" class="btn btn-primary center-block"><i class="fa fa-edit"></i> Région</a>
+                                <a href="{{route('directions')}}" class="btn btn-primary center-block"><i class="fa fa-edit"></i> Région</a>
                             </div>
                 </div>
                 <div class="col-md-6">
                         <div class="div2">
-                                <a href="{{route('regions')}}" class="btn btn-primary center-block"><i class="fa fa-edit"></i> Commune</a>
+                                <a href="{{route('services')}}" class="btn btn-primary center-block"><i class="fa fa-edit"></i> Commune</a>
                             </div>
                 </div>
             </div>

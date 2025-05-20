@@ -18,7 +18,7 @@
     <section class="content">
         @include('partials._title')
         @include('partials._notification')
-        @if ($users->count() > 0)
+   
 
             <div class="box">
                 <div class="box-header">
@@ -57,7 +57,7 @@
                     </tbody>    
                 </table>
             </div>
-        @else
+     
 
         <div class="row">
                 <div class="col-md-12">
@@ -71,7 +71,6 @@
                 </div>
 
               </div>
-        @endif
 
     </section>
     </div>

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-   protected $fillable = ['name', 'direction_id'];
+   protected $fillable = ['name',  'description','direction_id'];
 
    
 public function direction()
@@ -18,6 +18,10 @@ public function direction()
 public function agents()
 {
     return $this->hasMany(User::class); // ou Agent::class si tu as un modèle spécifique
+}
+public function agentsActifs()
+{
+    return $this->hasMany(Agent::class)->actifs();
 }
 
 }

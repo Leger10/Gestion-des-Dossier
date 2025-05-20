@@ -54,25 +54,42 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-         'admin' => \App\Http\Middleware\Administrateur::class,
-         'user' => \App\Http\Middleware\Utilisateur::class, // Ajoutez cette ligne
-        'utilisateur' => \App\Http\Middleware\Utilisateur::class,
-        'administrateur' => \App\Http\Middleware\Administrateur::class,
-        'Superviseur' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'Agent' => \App\Http\Middleware\Utilisateur::class,
-
-    ];
-
-
+    // Middleware d'authentification de base
+    'auth' => \App\Http\Middleware\Authenticate::class,
+    'auth' => \App\Http\Middleware\Authenticate::class,
+    'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class, // Assurez-vous que cette ligne existe
+    'user' => \App\Http\Middleware\Utilisateur::class,
+    'admin' => \App\Http\Middleware\Administrateur::class,
+    /*
+     * Autres middlewares désactivés
+     *
+    'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+    'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+    'can' => \Illuminate\Auth\Middleware\Authorize::class,
+    'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    // 'admin' => \App\Http\Middleware\Administrateur::class,
+    // 'user' => \App\Http\Middleware\Utilisateur::class,
+    // 'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+    
+    // Anciennes implémentations commentées
+    // 'utilisateur' => \App\Http\Middleware\Utilisateur::class,
+    // 'admin' => \App\Http\Middleware\Administrateur::class,
+    // 'Superviseur' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+    // 'Agent' => \App\Http\Middleware\Utilisateur::class,
+    // 'web' => [
+    //     \App\Http\Middleware\Administrateur::class,
+    // ],
+    // 'Superviseur' => [
+    //     \App\Http\Middleware\RedirectIfAuthenticated::class,
+    // ],
+    // 'Agent' => [
+    //     \App\Http\Middleware\Utilisateur::class,
+    // ],
+    */
+];
 
     
     /**

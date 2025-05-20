@@ -1,8 +1,13 @@
 <?php
 
 use App\Models\Direction;
+use Database\Seeders\DirectionServiceSeeder;
+use Database\Seeders\RattachementTypesTableSeeder;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+
+use Database\Seeders\UsersTableSeeder;
 
 class DirectionsSeeder extends Seeder
 {
@@ -11,28 +16,23 @@ class DirectionsSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-        // DB::table('directions')->insert([
-        //     'secretariat_particulier' => 'Exemple de secretariat particulier',
-        //     'saf' => 'Exemple de SAF',
-        //     'ssecu' => 'Exemple de SSECU',
-        //     'dt' => 'Exemple de DT',
-        //     'dsi' => 'Exemple de DSI',
-        //     'dig' => 'Exemple de DIG',
-        //     'desf' => 'Exemple de DESF',
-        //     'dasp' => 'Exemple de DASP',
-        // ]);
-
-        Direction::firstOrCreate([
-            'secretariat_particulier' => 'Exemple de secretariat particulier',
-            'saf' => 'Exemple de SAF',
-            'ssecu' => 'Exemple de SSECU',
-            'dt' => 'Exemple de DT',
-            'dsi' => 'Exemple de DSI',
-            'dig' => 'Exemple de DIG',
-            'desf' => 'Exemple de DESF',
-            'dasp' => 'Exemple de DASP',
-        ]);
+//    public function run()
+//     {
+//         // Désactive la vérification des clés étrangères pendant le seeding
+//         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        
+//         // Appelle les seeders individuels
+//         $this->call([
+//             DirectionsSeeder::class,
+//             // Ajoutez ici vos autres seeders
+//              RoleSeeder::class,
+//             UsersTableSeeder::class,
+//             DirectionServiceSeeder::class,
+//             RattachementTypesTableSeeder::class,
+//             // etc...
+//         ]);
+        
+//         // Réactive la vérification des clés étrangères
+//         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+//     }
     }
-}

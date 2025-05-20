@@ -30,10 +30,10 @@
 <body>
   <header>
       <div class="page-wraper">
-        <nav class="navbar-expand-lg fixed-top bg-fonce shadow ">
-            <div class="container">
+        <nav class="navbar-expanded-top bg-fonce shadow ">
+            <div class="container">-lg fix
                 <div class="navbar-brand">
-                    <a href="#"> <img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso">`</a>
+                    <a href="/"> <img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso">`</a>
                     <h5 class="text-white text-left"> <a href="/" style="color:#FFF;">Ministère de l'Administration Territoriale et de la Sécurité</a><br>
                       <small class="text-muted text-ombre ">Direction générale des transmissions et de l'informatique </small>
                     </h5>
@@ -53,14 +53,14 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 
                 <ul class="nav navbar-nav navbar-right" style="font-size: 1.2em;">
-                    @if (Route::is('accueil'))
+            
                     <li><a href="{{route('index')}}"><i class="fa fa-home"></i> Accueil</a></li>
-                    @endif
+                
                     @auth
                     <li><a href="{{route('accueil')}}">Vous êtes déjà connecté <i class="fa fa-user"></i></a></li>
                     @endauth
                     @guest
-<li><a href="{{route('accueil')}}" class="connexion-noir"><i class="fa fa-user"></i> Connexion</a></li>
+<li><a href="{{route('login')}}" class="connexion-noir"><i class="fa fa-user"></i> Connexion</a></li>
 
 
                     @endguest
@@ -80,7 +80,10 @@
         <div class="container text-center text-white text-md-left">
             <div class="row">
             <div class="col-md-6 mt-md-0 mt-3">
-                <a href="/"><img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso"></a>
+                <a href="/">
+    <img src="{{ asset('img/armoirie.png') }}" alt="Burkina Faso">
+</a>
+
                 <h5 class="text-uppercase" style="color:#FFF;">Direction générale des transmissions et de l'informatique  </h5>
                 <hr />
             </div>

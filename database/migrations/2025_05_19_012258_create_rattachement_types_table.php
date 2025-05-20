@@ -17,7 +17,10 @@ class CreateRattachementTypesTable extends Migration
     }
 
     public function down()
-    {
-        Schema::dropIfExists('rattachement_types');
-    }
+{
+    Schema::disableForeignKeyConstraints();
+    Schema::dropIfExists('rattachement_types');
+    Schema::enableForeignKeyConstraints();
+}
+
 }

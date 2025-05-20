@@ -35,21 +35,21 @@ class PageDashbordController extends Controller
     $totalService = $service->count();
     $serviceHommes = $service->where('sexe', 'Masculin')->count();
     $serviceFemmes = $service->where('sexe', 'Feminin')->count();
-
+$totalDirection = Agent::count(); // total des agents
     // Si tu as une fonction pour grouper les agents par direction/service
     $directionsServices = $this->getDirectionsWithServices();
-
+  $totalDirection = Agent::count(); // Exemple : total des agents
     // Envoi à la vue
     return view('pages.back-office-agent.accueil', [
         'agents' => $agents,
         'totalAgents' => $totalAgents,
         'totalHommes' => $totalHommes,
         'totalFemmes' => $totalFemmes,
-
+          'totalDirection',
         'totalDirection' => $totalDirection,
         'directionHommes' => $directionHommes,
         'directionFemmes' => $directionFemmes,
-
+  'totalDirection',
         'totalService' => $totalService,
         'serviceHommes' => $serviceHommes,
         'serviceFemmes' => $serviceFemmes,
@@ -83,7 +83,7 @@ class PageDashbordController extends Controller
     }
 
 
-    public function regions()
+    public function direcions()
     {
         $id_zone = '1';
         $listeAgent = Agent::onlyTrashed()

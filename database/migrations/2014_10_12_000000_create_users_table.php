@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -31,7 +32,10 @@ class CreateUsersTable extends Migration
      * @return void
      */
     public function down()
-    {
-        Schema::dropIfExists('users');
-    }
+{
+    Schema::disableForeignKeyConstraints();
+    Schema::dropIfExists('users');
+    Schema::enableForeignKeyConstraints();
+}
+
 }

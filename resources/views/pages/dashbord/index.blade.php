@@ -8,7 +8,7 @@
         <h1>Direction générale des collectivités territoriales</h1>
         <ol class="breadcrumb">
         <li class="active"><i class="fa fa-dashboard"></i> Accueil</li>
-        @if ($id_zone === '1')
+       
         <li class="active"><i class="fa fa-folder-open"></i> <b><strong>Liste agents des régions supprimées</strong></b></li>
         @else
         <li class="active"><i class="fa fa-folder-open"></i> <b><strong>Liste agents des communes supprimées</strong></b></li>
@@ -20,17 +20,15 @@
         @include('partials._title')
         @include('partials._notification')
         
-        @if ($listeAgent->count() > 0)
+
 
             <div class="box">
                 <div class="box-header">
-
-                @if ($id_zone === '1')
-                <h3 class="box-title ">Régions : Liste des agents archivés </h3>
-                @elseif ($id_zone === '2')
+       <h3 class="box-title ">Régions : Liste des agents archivés </h3>
+          
                 <h3 class="box-title ">Communes : Liste des agents archivés</h3>
-                @else
-                @endif
+                
+            
                 </div>
                 <div class="box-body">
                     <table id="example" class="table table-striped table-bordered" style="width:100%">
@@ -59,8 +57,7 @@
                     </table>
                 </div>
             </div>
-        @else
-
+    
         <div class="row">
                 <div class="col-md-12">
 
@@ -73,8 +70,7 @@
                 </div>
 
               </div>
-        @endif
-
+   
     </section>
     </div>
 @endsection

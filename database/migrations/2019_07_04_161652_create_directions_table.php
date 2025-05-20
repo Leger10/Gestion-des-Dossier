@@ -11,23 +11,20 @@ class CreateDirectionsTable extends Migration
      *
      * @return void
      */
-    public function up()
+   public function up()
     {
-        Schema::create('directions', function (Blueprint $table) {
+        // Pour la table directions
+Schema::create('directions', function (Blueprint $table) {
     $table->id();
-    $table->string('name'); // ✅ Cette ligne est indispensable
+    $table->string('name')->unique();
+    $table->text('description')->nullable();
     $table->timestamps();
-});
-
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('directions'); // Suppression de la table "directions"
+        Schema::dropIfExists('directions');
     }
+
 }

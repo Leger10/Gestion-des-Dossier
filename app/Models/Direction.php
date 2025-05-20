@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Direction extends Model
 {
-      protected $fillable = ['name']; // ✅ Ajoute ceci
+      protected $fillable = ['name', 'description']; // ✅ Ajoute ceci
 
     public function services()
     {

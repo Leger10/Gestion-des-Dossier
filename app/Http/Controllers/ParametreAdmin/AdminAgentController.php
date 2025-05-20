@@ -32,7 +32,7 @@ class AdminAgentController extends Controller
         $services = Service::orderBy('name')->get();
         $rattachementTypes = DB::table('rattachement_types')->get();
 
-        return view('page.back-office-agent.create', [
+        return view('pages.back-office-agent.create', [
             'directions' => $directions,
             'services' => $services,
             'rattachementTypes' => $rattachementTypes

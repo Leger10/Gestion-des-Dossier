@@ -213,7 +213,7 @@ a:focus {
 }
 .main-header #navbar-search-input.form-control:focus,
 .main-header #navbar-search-input.form-control:active {
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(216, 16, 16, 0.1);
   background: rgba(255, 255, 255, 0.9);
 }
 .main-header #navbar-search-input.form-control::-moz-placeholder {

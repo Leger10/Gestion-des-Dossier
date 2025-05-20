@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DirectionController;
+use App\Http\Controllers\PageParametre\PageController;
+use App\Http\Controllers\ParametreAdmin\AgentController;
 use App\Http\Controllers\ServiceController;
 use App\Models\Agent;
 use App\Models\Province;
@@ -12,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +28,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/','HomeController@index')->name('index');
 Auth::routes();
-// Route::get('deconnexion',[LoginController::class,'logout'])->name('logout');
+
+
+Route::get('/accueil', [PageController::class, 'accueil'])->name('pages.front-end.accueil');
+
+
+
 Route::group(['middleware' => ['auth'] ], function(){
 
 Route::post('register', 'Auth\RegisterController@register');
@@ -45,10 +52,10 @@ Route::get('statistiques/regions', 'PageParametre\StatistiqueController@statisti
 Route::get('statistiques/communes', 'PageParametre\StatistiqueController@statistiqueCommune')->name('statistique.commune');
 
 Route::get('regions', 'PageParametre\PageController@regions')->name('regions');
-Route::get('mes/agents/regions', 'PageParametre\PageController@mesRegionsAdmin')->name('mesRegionsAdmin');
+Route::get('mes/agents/regions', 'PageParametre\PageController@mesDirectionsAdmin')->name('mesDirectionsAdmin');
 
 Route::get('commune', 'PageParametre\PageController@commune')->name('commune');
-Route::get('mes/agents/commune', 'PageParametre\PageController@mesCommuneAdmin')->name('mesCommuneSaisirent');
+Route::get('mes/agents/services', 'PageParametre\PageController@mesServiceAdmin')->name('mesServicesSaisirent');
 
 Route::get('ListeProvinceAjax/{id}','PageParametre\PageController@ListeProvincesAjax');
 Route::get('ListeCommuneAjax/{id}','PageParametre\PageController@ListeCommunesAjax');
@@ -56,8 +63,9 @@ Route::get('EtatCommuneAjax/{id}','PageParametre\PageController@etatCommuneAjax'
 
 // admin
 
-Route::post('download/excel_file_region', 'PageParametre\ExportCsvController@exportRegion')->name('export.region');
-Route::post('download/excel_file_commune', 'PageParametre\ExportCsvController@exportCommune')->name('export.commune');
+// Route::post('download/excel_file_direction', 'PageParametre\ExportCsvController@exportDirection')->name('export.direction');
+// Route::post('download/excel_file_service', 'PageParametre\ExportCsvController@exportService')->name('export.service');
+// Route::post('download/excel_file_agent', 'PageParametre\ExportCsvController@exportAgent')->name('export.agent');
 
 Route::get('charts', 'PageParametre\PageDashbordController@chart');
 
@@ -75,12 +83,41 @@ Route::get('dashbord/editer/utilisateur/{id}', 'PageParametre\PageDashbordContro
 
 Route::post('dashbord/update/utilisateur{id}', 'PageParametre\PageDashbordController@userUpadate')->name('dashbord.user_upadate');
 
+Route::prefix('export')->name('export.')->group(function() {
+    // Export par direction
+    Route::get('/direction/{direction}', [PageController::class, 'exportByDirection'])
+         ->name('direction'); // Nom complet sera 'export.direction'
+    
+    // Export par service
+    Route::get('/service/{service}', [PageController::class, 'exportByService'])
+         ->name('service'); // Nom complet sera 'export.service'
+    // Utilisez :
+Route::get('/export/filter', [PageController::class, 'exportByService']);
+    // Export avec filtres
+    Route::get('/filter', [PageController::class, 'exportFiltered'])
+         ->name('filter'); // Nom complet sera 'export.filter'
+});
 
 });
-Route::resource('directions', DirectionController::class);
-Route::resource('services', ServiceController::class);
-// Avant
+Route::prefix('admin')->group(function() {
+    Route::resource('directions', 'DirectionController');
+    Route::resource('services', 'ServiceController');
+});
+Route::get('/admin/regions', [PageController::class, 'mesDirectionsAdmin']);
+// Route::get('/admin/communes', [PageController::class, 'mesServicesAdmin']);
+
+// Route::prefix('admin')->group(function() {
+//     Route::get('/agents/export', 'AgentController@exportAll')->name('agents.export');
+//     Route::get('/agents/export/direction/{id}', 'AgentController@exportByDirection')->name('agents.export.direction');
+//     Route::get('/agents/export/service/{id}', 'AgentController@exportByService')->name('agents.export.service');
+// });
 
 
-// Après
+// API pour charger les services
+// Supprimez toutes les définitions existantes de ces routes
+// Puis ajoutez ceci :
+
+
+Route::get('/directions/{direction}/services', [ApiController::class, 'getServicesByDirection']);
+     
 Route::resource('agent', \App\Http\Controllers\ParametreAdmin\AdminAgentController::class);

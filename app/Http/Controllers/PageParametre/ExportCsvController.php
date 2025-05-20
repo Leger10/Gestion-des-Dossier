@@ -12,32 +12,46 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ExportCsvController extends Controller
 {
-    public function exportRegion(Request $request)
-    {
-        $agent = Agent::where('rattachement_zone_id', $request->region)->first();
-        
-        if (isset($agent) || $request->region === 'TOUTES LES REGIONS') {
-            return Excel::download(new CsvExport(1, $request->region), 'Liste_regions_CT.xlsx');
+    public function exportDirection(Request $request)
+{
+    // Vérifier si on veut toutes les directions ou une direction spécifique
+    if ($request->direction === 'TOUTES LES DIRECTIONS') {
+        return Excel::download(new CsvExport(2, ''), 'Liste_directions_CT.xlsx');
+    } else {
+        // Vérifier s'il y a des agents dans cette direction
+        $agentsExist = Agent::whereHas('direction', function($query) use ($request) {
+            $query->where('id', $request->direction);
+        })->exists();
+
+        if ($agentsExist) {
+            return Excel::download(new CsvExport(2, $request->direction), 'Liste_direction_CT.xlsx');
         } else {
-            flash('Pas de région disponible', 'danger');
-            return back();  
+            flash('Aucun agent disponible dans cette direction', 'danger');
+            return back();
         }
+    }
+}
         
        
               
-    }
+ 
+public function exportService(Request $request)
+{
+    // Vérifier si on veut tous les services ou un service spécifique
+    if ($request->service === 'TOUS LES SERVICES') {
+        return Excel::download(new CsvExport(3, ''), 'Liste_services.xlsx');
+    } else {
+        // Vérifier s'il y a des agents dans ce service
+        $agentsExist = Agent::whereHas('service', function($query) use ($request) {
+            $query->where('id', $request->service);
+        })->exists();
 
-    public function exportCommune(Request $request)
-    {
-        $agent = Agent::where('rattachement_zone_id', $request->collectivite)->first();
-        
-        if (isset($agent) || $request->collectivite === 'TOUTES LES COMMNUNES') {
-            return Excel::download(new CsvExport(2, $request->collectivite), 'Liste_communes.xlsx');
+        if ($agentsExist) {
+            return Excel::download(new CsvExport(3, $request->service), 'Liste_service.xlsx');
         } else {
-            flash('Pas de commune disponible ', 'danger');
-            return back();  
+            flash('Aucun agent disponible dans ce service', 'danger');
+            return back();
         }
-
-
     }
+}
 }

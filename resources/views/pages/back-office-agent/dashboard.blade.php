@@ -5,7 +5,7 @@
     <div class="content-wrapper">
     <section class="content-header">
         <h1>
-        Direction générale des collectivités territoriales
+        Direction générale des Transmissions et de l'informatique
         </h1>
         <ol class="breadcrumb">
         <li class="active"><i class="fa fa-user-plus"></i> <b><strong>Nouvel agent</strong></b></li>
@@ -13,7 +13,7 @@
     </section>
     <section class="content">
         <div class="callout callout-info">
-            <h4>Gestion de la base de données des effectifs des collectivités territoriales de la DGFPT</h4>
+            <h4>Gestion du personnel et des dossiers individuel</h4>
         </div>
 
         <div id="app">

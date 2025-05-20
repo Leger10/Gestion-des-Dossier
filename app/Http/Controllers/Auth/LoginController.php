@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Hash;
+
 class LoginController extends Controller
 {
     /*
@@ -33,18 +34,19 @@ class LoginController extends Controller
      *
      * @return void
      */
-    // public function __construct()
-    // {
-    //     $this->middleware('guest')->except('logout');
-    // }
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
+    }
+    
 
-    // protected function authenticated(Request $request, $user)
-    // {
-    //     if ($user->is_admin == 0 || $user->is_admin == 1) {
-    //         return redirect()->route('accueil');
-    //     }
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->is_admin == 0 || $user->is_admin == 1) {
+            return redirect()->route('accueil');
+        }
 
-    // }
+    }
     
     public function logout(Request $request)
     {
