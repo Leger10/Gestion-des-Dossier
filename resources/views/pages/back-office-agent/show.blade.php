@@ -1,24 +1,23 @@
-@extends('layouts.admin', ['titrePage' => 'DGTPT'])
+@extends('layouts.admin', ['titrePage' => 'DGTI'])
 @section('content')
     @include('partials.back-admin._nav')
     <div class="content-wrapper">
 
     <section class="content-header">
         <h1>
-        Direction générale des collectivités territoriales
+              Direction générale des transmissions et de l'informatique
         </h1>
         <ol class="breadcrumb">
             @switch($detailAgent->rattachement_type_id)
                 @case(1)
                     <li class="active"><i class="fa fa-dashboard"></i> Dashbord</li>
-                    <li class="active"> <b><strong><span style="color:red;">Région</span>/ <i class="fa fa-file-text-o"></i> Information personnelle de l'agent</strong></b></li>
+                    <li class="active"> <b><strong><span style="color:red;">Direction</span>/ <i class="fa fa-file-text-o"></i> Information personnelle de l'agent</strong></b></li>
                     @break
                 @case(2)
                     <li class="active"><i class="fa fa-dashboard"></i> Dashbord</li>
-                    <li class="active"> <b><strong><span style="color:red;">Commune</span>/ <i class="fa fa-file-text-o"></i> Information personnelle de l'agent</strong></b></li>
+                    <li class="active"> <b><strong><span style="color:red;">Service</span>/ <i class="fa fa-file-text-o"></i> Information personnelle de l'agent</strong></b></li>
                     @break
                 @default
-
             @endswitch
         </ol>
     </section>
@@ -60,8 +59,6 @@
                                 <dt>Date d'intégration :</dt>  <dd>{{formatDateInFrench($detailAgent->date_integration)}}</dd>
                                 <dt title="Références de l'acte intégration">Références de l'acte intégration :</dt>  <dd> {{$detailAgent->ref_acte_integration }} </dd>
                                 <dt title="Date de titularisation">Date de titularisation :</dt>  <dd>{{formatDateInFrench($detailAgent->date_titularisation)}} </dd>
-                               
-                               
                             </dl>
                         </div>
                     </div>
@@ -74,7 +71,7 @@
 
                         <div class="box box-primary">
                             <div class="box-header with-border">
-                                    <h3 class="box-title">Position dans la collectivité</h3>
+                                    <h3 class="box-title">Position dans l'organisation</h3>
                             </div>
                         </div>
                         <div class="box-body">
@@ -91,12 +88,11 @@
                                  @if($detailAgent->format_initiale === 'Oui') 
                                     <dt title="Diplôme obtenu à l'issue de la formation initiale">Diplôme obtenu à l'issue de la formation initiale</dt><dd>{{$detailAgent->diplome_formation }}</dd>
                                 @endif
-                                <dt title="Position dans la collectivité">Position dans la collectivité :</dt>  <dd>{{$detailAgent->position_collectivite }}</dd>
+                                <dt title="Position dans l'organisation">Position dans l'organisation :</dt>  <dd>{{$detailAgent->position_collectivite }}</dd>
                                 @if ($detailAgent->sous_activite <> null)
                                 <dt>Etat d'activité :</dt><dd>{{$detailAgent->sous_activite }}</dd>
                                 @endif
                                 <dt title="Situation particulière">Situation particulière :</dt><dd>{{$detailAgent->situa_particuliere }}</dd>
-                               
                             </dl>
 
                         </div>
@@ -114,16 +110,15 @@
 
                             <div class="box box-primary">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Localité de l'agent :</h3>
+                                    <h3 class="box-title">Affectation organisationnelle</h3>
                                 </div>
                             </div>
                             <div class="box-body">
 
                                 <dl>
-
                                     @if ($detailAgent->rattachement_type_id == 1)
                                     @foreach ($zone as $localite)
-                                        <dt>Région :</dt>  <dd> {{$localite->libelle }} </dd>
+                                        <dt>Direction :</dt>  <dd> {{$localite->libelle }} </dd>
                                         <dt> </dt><dd> <br></dd>
                                         <dt> </dt><dd> <br></dd>
                                         <dt> </dt><dd> <br></dd>
@@ -131,16 +126,14 @@
                                     @endforeach
                                 @else
                                     @foreach ($zone as $localite)
-                                        {{-- <dt>Région :</dt>   <dd> {{$region->libelle }} </dd>
-                                        <dt>Province :</dt> <dd> {{$province->libelle }} </dd> --}}
-                                        <dt>Commune :</dt>  <dd> {{$localite->libelle }} </dd>
+                                        <dt>Service :</dt>  <dd> {{$localite->libelle }} </dd>
                                         @if($localite->type_collectivite === 1)
-                                        <dt>Type commune :</dt><dd>Rurale</dd>
+                                        <dt>Type service :</dt><dd>Technique</dd>
                                         @else
-                                        <dt>Type commune :</dt><dd>Urbaine</dd>
+                                        <dt>Type service :</dt><dd>Administratif</dd>
                                         @endif
                                          @if($localite->staut_type_collectivite === 2)
-                                        <dt>Statut commune :</dt><dd>Particulier</dd>
+                                        <dt>Statut service :</dt><dd>Spécialisé</dd>
                                         @endif
                                         <dt> </dt><dd> <br></dd>
                                         <dt> </dt><dd> <br></dd>
@@ -165,7 +158,6 @@
                                     <dt>Echelle :</dt>  <dd>  {{$detailAgent->echelle}} </dd>
                                     <dt>Classe :</dt>  <dd>  {{$detailAgent->classe}} </dd>
                                     <dt>Echelon :</dt>  <dd> {{$detailAgent->echelon }} </dd>
-                                    <!-- <dt>Formation initiale</dt><dd>{{$detailAgent->format_initiale }}</dd> -->
                                 </dl>
                             </div>
                         </div>

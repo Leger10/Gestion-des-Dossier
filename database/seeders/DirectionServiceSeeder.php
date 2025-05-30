@@ -71,10 +71,15 @@ class DirectionServiceSeeder extends Seeder
                     ['name' => 'ARTI Sud-ouest', 'short' => 'ARTI-SO'],
                     ['name' => 'ARTI Centre', 'short' => 'ARTI-C'],
                     ['name' => 'ARTI Centre-Ouest', 'short' => 'ARTI-CO'],
+                     ['name' => 'ARTI Centre-Est', 'short' => 'ARTI-CE'],
                     ['name' => 'ARTI Est', 'short' => 'ARTI-E'],
                     ['name' => 'ARTI Centre-sud', 'short' => 'ARTI-CS'],
                     ['name' => 'ARTI Sahel', 'short' => 'ARTI-S'],
-                    ['name' => 'ARTI Sud-est', 'short' => 'ARTI-SE']
+                    ['name' => 'ARTI Sud-est', 'short' => 'ARTI-SE'],
+                    ['name' => 'ARTI Cascade', 'short' => 'ARTI-C'],
+                    ['name' => 'ARTI Centre-nord', 'short' => 'ARTI-CN'],
+                    ['name' => 'ARTI Plateau-centrale', 'short' => 'ARTI-PC'],
+                     ['name' => 'ARTI Boucle-Mouhoun', 'short' => 'ARTI-BM']
                 ]
             ]
         ];

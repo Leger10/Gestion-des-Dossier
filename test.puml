@@ -1,0 +1,5 @@
+@startuml
+class Test {
+  + methode1() : void
+}
+@enduml

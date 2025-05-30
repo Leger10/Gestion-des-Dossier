@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 class RattachementTypesTableSeeder extends Seeder
 {
-    public function run(): void
-    {
-        DB::table('rattachement_types')->insert([
-            ['name' => 'Direction'],
-            ['name' => 'Service'],
-        ]);
-    }
+    public function run()
+{
+    DB::table('rattachement_types')->insert([
+    ['name' => 'Direction'],
+    ['name' => 'Service'],
+]);
+
+}
+
 }

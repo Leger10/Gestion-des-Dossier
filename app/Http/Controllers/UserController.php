@@ -49,4 +49,13 @@ public function changePassword(Request $request)
     // Retour avec un message de succès
     return redirect()->route('password.change')->with('status', 'Mot de passe mis à jour avec succès.');
 }
+
+public function index()
+{
+    $adminUsers = User::whereHas('role', function($query) {
+        $query->where('name', 'Administrateur');
+    })->get();
+
+    return view('dashbord.utilisateur', compact('adminUsers'));
+}
 }

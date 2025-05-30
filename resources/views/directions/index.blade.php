@@ -57,7 +57,7 @@
                                 Direction<span class="visible-xs">s</span><span class="hidden-xs">s</span>
                             </span>
 
-                            <span class="info-box-number">{{ $totalDirections }}</span>
+                            <span class="info-box-number">{{ $stats['totalDirection'] ?? 0 }}</span>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                         <span class="info-box-icon bg-green"><i class="fa fa-folder"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">Services</span>
-                            <span class="info-box-number">{{ $totalServices }}</span>
+                            <span class="info-box-number">{{ $stats['totalService'] ?? 0 }}</span>
                         </div>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         <span class="info-box-icon bg-yellow"><i class="fa fa-users"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">Agents</span>
-                            <span class="info-box-number">{{ $totalAgents }}</span>
+                            <span class="info-box-number">{{ $stats['totalAgents'] ?? 0 }}</span>
                         </div>
                     </div>
                 </div>

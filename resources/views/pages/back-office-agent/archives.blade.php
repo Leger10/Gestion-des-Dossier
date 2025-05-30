@@ -1,3 +1,5 @@
+
+    
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -5,17 +7,21 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">Archivage de l'agent</h4>
             </div>
-            <form action="{{route('agent.destroy', $detailAgent)}}" method="POST">
+            <form action="{{route('agent.destroy', ['agent' => $agents])}}" method="POST">
                     @csrf
                     {{@method_field('DELETE')}}
             <div class="modal-body">
-                <h4>Voulez-vous archiver l'agent : {{$detailAgent->prenom }} {{$detailAgent->nom }} ?</h4>
+                @foreach ($agents as $agent)
+    <h4>Voulez-vous archiver l'agent : {{ $agent->prenom ?? '' }} {{ $agent->nom ?? '' }} ?</h4>
+@endforeach
+
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label>Type d'archivage :</label>
                             <select class="form-control" id="archive" name="typeArchive">
                                 <option value="" selected disabled>Sélectionner le type d'archivage</option>
+                                      <option value="Affecté" >Affecté</option>
                                 <option value="Décédé" >Décédé</option>
                                 <option value="Démissionné" >Démissionné</option>
                                 <option value="Licencié" >Licencié</option>
@@ -46,6 +52,7 @@
         </div>
     </div>
 </div>
+
 <button class="btn btn-danger btn-lg pull-right" data-toggle="modal" data-target="#myModal">
     <i class="fa fa-archive"></i>  Archiver
 </button>

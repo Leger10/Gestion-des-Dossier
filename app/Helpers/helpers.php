@@ -14,14 +14,11 @@ if(! function_exists('flash')){
 }
 
 if (!function_exists('directions')) {
+   
     function directions()
     {
-        return Direction::all();
-    }
-    function directions()
-    {
-        $regions = Direction::all();
-        return $regions;
+        $directions = Direction::all();
+        return $directions;
     }
 }
 
@@ -71,7 +68,7 @@ if (!function_exists('collectivites')) {
 if (!function_exists('statuts')) {
     function statuts()
     {
-        $statuts = collect(['Fonctionnaire de CT', 'Contractuel de CT', 'Agent de la fonction publique d\'Etat', 'Agent de la fonction publique parlemantaire', 'Agent de la fonction publique hospitalière', 'Agent de la fonction publique universitaire', 'Agent d\'un établissement public de l\'Etat', 'Agent d\'un établissement public local', 'Agent régi par le statut de la police nationale', 'Agent des eaux et forêt', 'Autres']);
+        $statuts = collect([ 'Agent de la fonction publique d\'Etat', 'Agent de la fonction publique parlemantaire', 'Agent de la fonction publique hospitalière', 'Agent de la fonction publique universitaire', 'Agent d\'un établissement public de l\'Etat', 'Agent d\'un établissement public local', 'Agent régi par le statut de la police nationale', 'Agent des eaux et forêt', 'Autres']);
         return $statuts;
     }
 }

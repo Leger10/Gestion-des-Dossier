@@ -6,8 +6,8 @@ a:hover{text-decoration: none}
 .droite{ text-align: right !important }
 .error{ font-size: .9em; color:red }
 
-.bg-fonce{background:  #2E053A;}
-.pt-5{background: #2E053A; padding-top: 56px;}
+.bg-fonce{background:  #1565c0;}
+.pt-5{background:#1565c0; padding-top: 56px;}
 .navbar-brand { width: 100%; padding-bottom:0;  }
 .navbar-brand h5{font-size: 1.2em; text-align: right;}
 .navbar-brand h5 small{ line-height: 3em; text-align: left; color: rgb(231, 232, 240);}
@@ -112,20 +112,20 @@ dl:after {content:"";display:table;clear:both;}
   font-weight: 700;
 }
 .circle-tile-footer {
-  background-color: #2E053A;
+  background-color:#1565c0;
   color: rgba(255, 255, 255, 0.5);
   display: block;
   padding: 5px;
   transition: all 0.3s ease-in-out 0s;
 }
 .circle-tile-footer:hover {
- background-color: #2E053A;
+ background-color: #1565c0;
 
   color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
 }
 .circle-tile-heading.dark-blue:hover {
-  background-color:  #2E053A;
+  background-color:  #1565c0;
 }
 .circle-tile-heading.green:hover {
   background-color: #138F77;
@@ -147,7 +147,7 @@ dl:after {content:"";display:table;clear:both;}
 }
 
 .dark-blue {
-  background-color:  #2E053A;
+  background-color: #1565c0;
 }
 .green {
   background-color: #16A085;

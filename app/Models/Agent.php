@@ -1,108 +1,215 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\Direction;
-use App\Models\Service;
-use App\Models\User;
+use Carbon\Carbon;
 
 class Agent extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'nom', 'prenom', 'lieu_naiss', 'date_naiss', 'sexe', 'situation_matri', 'matricule',
-        'niveau_recrutement', 'date_prise_de_service', 'emploi', 'fonction', 'statut', 'categorie',
-        'grade', 'classe', 'echelon', 'autorisation_absence', 'demande_conge', 'demande_explication',
-        'felicitation_reconnaissance', 'sanctions', 'autre_situation', 'formInit', 'position', 'situationParti',
-        'direction_id', 'service_id', 'rattachement_type_id', 'rattachement_zone_id', 'id_user_create',
-        'id_user_update', 'id_user_delete'
+        'nom',
+        'prenom',
+        'telephone',
+        'date_naissance',
+        'lieu_naissance',
+        'sexe',
+
+        'situation_matrimoniale',
+        'matricule',
+        'nationalite',
+        'date_recrutement',
+        'diplome_recrutement',
+        'statut',
+        'position',
+        'grade',
+        'categorie',
+        'echelon',
+        'indice',
+        'date_prise_de_service',
+        'type_affectation',
+        'position_agents',
+        'position_service',
+        'direction_id',
+        'service_id',
+        'id_user_create',
+        'id_user_update',
+        'id_user_delete'
     ];
 
     protected $casts = [
-        'date_naiss' => 'date',
-        'date_prise_de_service' => 'date',
-        'deleted_at' => 'datetime'
+        'date_naissance' => 'datetime',
+        'date_recrutement' => 'datetime',
+        'date_prise_de_service' => 'datetime',
     ];
 
-    // Relation avec la direction
+    /*
+    |--------------------------------------------------------------------------
+    | Relations
+    |--------------------------------------------------------------------------
+    */
+
     public function direction()
     {
         return $this->belongsTo(Direction::class);
     }
 
-    // Relation avec le service
     public function service()
     {
         return $this->belongsTo(Service::class);
     }
 
-    // Relation polymorphique pour le rattachement
-    public function rattachement()
-    {
-        return $this->morphTo(
-            'rattachement', 
-            'rattachement_type_id', 
-            'rattachement_zone_id'
-        );
-    }
-
-    // Relation avec l'utilisateur créateur
     public function userCreate()
     {
         return $this->belongsTo(User::class, 'id_user_create');
     }
 
-    // Relation avec l'utilisateur modificateur
     public function userUpdate()
     {
         return $this->belongsTo(User::class, 'id_user_update');
     }
 
-    // Relation avec l'utilisateur suppresseur
     public function userDelete()
     {
         return $this->belongsTo(User::class, 'id_user_delete');
     }
 
-    // Relation avec les dossiers
     public function dossiers()
     {
-        return $this->hasMany(dossier::class);
+        return $this->hasMany(Dossier::class);
+    }
+
+    public function actes_administratifs()
+    {
+        return $this->hasMany(ActeAdministratif::class);
     }
 
 
-    public function setDateNaissAttribute($value)
+    public function evaluations()
     {
-        $this->attributes['date_naiss'] = \Carbon\Carbon::parse($value);
+        return $this->hasMany(Evaluation::class);
+    }
+
+    public function sanctions()
+    {
+        return $this->hasMany(Sanction::class);
+    }
+
+
+    // Accesseurs utiles
+    public function getFullNameAttribute()
+    {
+        return "{$this->prenom} {$this->nom}";
+    }
+    public function recompenses()
+    {
+        return $this->hasMany(Recompense::class);
+    }
+
+    public function conge_absences()
+    {
+        return $this->hasMany(CongeAbsence::class);
+    }
+
+
+    public function formations()
+    {
+        return $this->hasMany(Formation::class);
+    }
+
+    public function affectations()
+    {
+        return $this->hasMany(Affectation::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getNomCompletAttribute()
+    {
+        return "{$this->prenom} {$this->nom}";
+    }
+    public function getStatutClasseAttribute()
+    {
+        $classes = [
+            'Actif' => 'success',
+            'En congé' => 'warning',
+            'Détaché' => 'info',
+            'Archivé' => 'danger',
+        ];
+
+        return $classes[$this->statut] ?? 'default';
+    }
+
+    public function getEffectiveDirectionAttribute()
+    {
+        return $this->service ? $this->service->direction : $this->direction;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutateurs
+    |--------------------------------------------------------------------------
+    */
+
+    public function setDateNaissanceAttribute($value)
+    {
+        $this->attributes['date_naissance'] = Carbon::parse($value);
     }
 
     public function setDatePriseDeServiceAttribute($value)
     {
-        $this->attributes['date_prise_de_service'] = \Carbon\Carbon::parse($value);
+        $this->attributes['date_prise_de_service'] = $value ? Carbon::parse($value) : null;
     }
 
-    
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeActifs($query)
+    {
+        return $query->where('statut', 'Actif');
+    }
 
     public function scopeHommes($query)
     {
-        return $query->where('sexe', 'Masculin');
+        return $query->where('sexe', 'M');
     }
 
     public function scopeFemmes($query)
     {
-        return $query->where('sexe', 'Feminin');
+        return $query->where('sexe', 'F');
     }
-    // Accesseur pour le nom complet
-public function getNomCompletAttribute()
-{
-    return $this->nom . ' ' . $this->prenom;
-}
 
-// Scope pour les agents actifs
-public function scopeActifs($query)
-{
-    return $query->where('statut', 'Actif');
-}
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Events (Soft Delete override)
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted()
+    {
+        static::deleting(function ($agent) {
+            $agent->is_archived = true;
+            $agent->save();
+        });
+    }
 }

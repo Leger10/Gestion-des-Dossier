@@ -2,13 +2,16 @@
 
 namespace App;
 
+use App\Models\Role;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +25,11 @@ class User extends Authenticatable
     public function agent()
     {
         return $this->belongsTo('App\Models\Agent');
+    }
+    // Déclaration de la relation avec le modèle Role
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     /**

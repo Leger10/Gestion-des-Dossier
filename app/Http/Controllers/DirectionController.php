@@ -10,9 +10,66 @@ use Illuminate\Support\Facades\DB;
 
 class DirectionController extends Controller
 {
-     public function index()
-    {
-        // Récupère toutes les directions avec leurs services et le nombre d'agents par service
+   public function index()
+{
+    $stats = [];
+$directions = Direction::with(['services' => function($query) {
+    $query->withCount('agents');
+}])->withCount('services')->get();
+
+    // Totaux généraux
+    $stats['totalAgents'] = Agent::count();
+    $stats['totalDirection'] = Agent::distinct('direction_id')->count('direction_id');
+    $stats['totalService'] = Agent::distinct('service_id')->count('service_id');
+
+    // Par genre
+    $stats['hommesTotal'] = Agent::where('sexe', 'M')->count();
+    $stats['femmesTotal'] = Agent::where('sexe', 'F')->count();
+
+    // Par direction
+    $stats['hommesDirection'] = Agent::where('sexe', 'M')->whereNotNull('direction_id')->count();
+    $stats['femmesDirection'] = Agent::where('sexe', 'F')->whereNotNull('direction_id')->count();
+    $stats['totalDirection'] = Agent::whereNotNull('direction_id')->count();
+
+    // Par service
+    $stats['hommesService'] = Agent::where('sexe', 'M')->whereNotNull('service_id')->count();
+    $stats['femmesService'] = Agent::where('sexe', 'F')->whereNotNull('service_id')->count();
+    $stats['totalService'] = Agent::whereNotNull('service_id')->count();
+
+    // Répartition par catégorie (Direction)
+    $categories = ['I', 'II', 'III', 'Néant'];
+    foreach ($categories as $cat) {
+        $stats['directionCategories'][$cat] = [
+            'hommes' => Agent::where('categorie', $cat)->where('sexe', 'M')->whereNotNull('direction_id')->count(),
+            'femmes' => Agent::where('categorie', $cat)->where('sexe', 'F')->whereNotNull('direction_id')->count(),
+        ];
+        $stats['directionCategories'][$cat]['total'] = $stats['directionCategories'][$cat]['hommes'] + $stats['directionCategories'][$cat]['femmes'];
+    }
+
+    // Répartition par catégorie (Service)
+    foreach ($categories as $cat) {
+        $stats['serviceCategories'][$cat] = [
+            'hommes' => Agent::where('categorie', $cat)->where('sexe', 'M')->whereNotNull('service_id')->count(),
+            'femmes' => Agent::where('categorie', $cat)->where('sexe', 'F')->whereNotNull('service_id')->count(),
+        ];
+        $stats['serviceCategories'][$cat]['total'] = $stats['serviceCategories'][$cat]['hommes'] + $stats['serviceCategories'][$cat]['femmes'];
+    }
+
+    // Récapitulatif par directions
+    $directionNames = Direction::pluck('name')->toArray();
+    $stats['directionNames'] = $directionNames;
+    foreach ($directionNames as $name) {
+        $direction = Direction::where('name', $name)->first();
+        if ($direction) {
+            $stats['directionRecap'][$name] = [
+                'hommes' => Agent::where('sexe', 'M')->where('direction_id', $direction->id)->count(),
+                'femmes' => Agent::where('sexe', 'F')->where('direction_id', $direction->id)->count(),
+            ];
+            $stats['directionRecap'][$name]['total'] =
+                $stats['directionRecap'][$name]['hommes'] + $stats['directionRecap'][$name]['femmes'];
+        }
+    }
+     // Récupère toutes les directions avec leurs services et le nombre d'agents par service
         $directions = Direction::with(['services' => function($query) {
             $query->withCount('agents');
         }])->withCount('services')->get();
@@ -39,11 +96,12 @@ class DirectionController extends Controller
             'totalServices',
             'totalAgents',
             'agentsParDirection',
-            'agentsParService'
+            'agentsParService',
+            'stats',
         ));
     }
 
-
+  
     public function create()
     {
         // La création est gérée via modal, rediriger vers l'index

@@ -1,183 +1,175 @@
-@extends('layouts.admin', ['titrePage' => 'DGTPT'])
+@extends('layouts.admin', ['titrePage' => 'DGTI'])
 @section('content')
-    @include('partials.back-admin._nav')
-    
-    <div class="content-wrapper">
-        <section class="content-header">
-            <h1>Direction générale des collectivités territoriales</h1>
-            <ol class="breadcrumb">
-                <li class="active"><i class="fa fa-dashboard"></i> Accueil</li>
-                <li class="active"><i class="fa fa-user-plus"></i> <strong>Nouvel agent</strong></li>
-            </ol>
-        </section>
+@include('partials.back-admin._nav')
 
-        <section class="content">
-            @include('partials._notification')
-            
-            <form action="{{ route('agent.store') }}" method="post">
-                @csrf
-                
-                <!-- Section Direction/Service de rattachement -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box box-primary">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Rattachement administratif</h3>
-                            </div>
-                            <div class="box-body">
-                                <div class="col-md-4">
-                                    {!! $errors->first('direction', '<span class="error text-error">:message</span>') !!}
-                                    <div class="form-group">
-                                        <label>Type de rattachement (*)</label><br>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="rattachement_type" value="direction" 
-                                                   {{ old('rattachement_type') == "direction" ? 'checked' : '' }}>
-                                            Direction
-                                        </label><br>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="rattachement_type" value="service" 
-                                                   {{ old('rattachement_type') == "service" ? 'checked' : '' }}>
-                                            Service
-                                        </label>
-                                    </div>
-                                    {!! $errors->first('rattachement_type', '<span class="error text-error">:message</span>') !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>{{ __("Direction générale des transmissions et de l'informatique") }}</h1>
+        <ol class="breadcrumb">
+            <li class="active"><i class="fa fa-dashboard"></i> Accueil</li>
+            <li class="active"><i class="fa fa-user-plus"></i> <strong>Nouvel agent</strong></li>
+        </ol>
+    </section>
+
+    <section class="content">
+        @include('partials._notification')
+
+        <form action="{{ route('agent.store') }}" method="POST">
+            @csrf
+
+{{-- Rattachement --}}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Rattachement</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+
+                {{-- Type de rattachement --}}
+                <div class="col-md-6">
+                    <label for="rattachement_type" class="form-label">Type de rattachement *</label>
+                    <select name="rattachement_type" id="rattachement_type" class="form-select @error('rattachement_type') is-invalid @enderror" required>
+                        <option value="">Sélectionner</option>
+                        <option value="direction" {{ old('rattachement_type') == 'direction' ? 'selected' : '' }}>Direction</option>
+                        <option value="service" {{ old('rattachement_type') == 'service' ? 'selected' : '' }}>Service</option>
+                    </select>
+                    @error('rattachement_type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <!-- Section Direction (visible si direction sélectionnée) -->
-                <div class="box box-primary" id="direction-section" style="display:{{ old('rattachement_type') == 'direction' ? 'block' : 'none' }};">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Direction de rattachement</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Direction (*)</label>
-                                <select class="form-control" name="direction_id" required>
-                                    <option value="">Sélectionner une direction</option>
-                                    @foreach ($directions as $direction)
-                                        <option value="{{ $direction->id }}" {{ old('direction_id') == $direction->id ? 'selected' : '' }}>
-                                            {{ $direction->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {!! $errors->first('direction_id', '<span class="error text-error">:message</span>') !!}
-                        </div>
-                    </div>
-                </div>
- <!-- Section Direction -->
-                <div class="box box-primary" id="direction-section" style="display:{{ old('rattachement_type') == 'direction' ? 'block' : 'none' }};">
-                    <!-- ... contenu existant ... -->
+                {{-- Direction --}}
+                <div class="col-md-6">
+                    <label for="direction_id" class="form-label">Direction *</label>
+                    <select name="parent_direction_id" id="direction_id" class="form-select @error('parent_direction_id') is-invalid @enderror" required>
+                        <option value="">Sélectionner une direction</option>
+                        @foreach($directions as $direction)
+                            <option value="{{ $direction->id }}" {{ old('parent_direction_id') == $direction->id ? 'selected' : '' }}>
+                                {{ $direction->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('parent_direction_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <!-- Section Service -->
-                <div class="box box-primary" id="service-section" style="display:{{ old('rattachement_type') == 'service' ? 'block' : 'none' }};">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Service de rattachement</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Direction (*)</label>
-                                <select class="form-control" id="direction-select" name="parent_direction_id" required>
-                                    <option value="">Sélectionner une direction</option>
-                                    @foreach ($directions as $direction)
-                                        <option 
-                                            value="{{ $direction->id }}" 
-                                            {{ old('parent_direction_id') == $direction->id ? 'selected' : '' }}
-                                            data-services="{{ $direction->services->toJson() }}"
-                                        >
-                                            {{ $direction->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Service (*)</label>
-                                <select class="form-control" id="service-select" name="service_id" required>
-                                    <option value="">Sélectionner un service</option>
-                                    @if(old('service_id'))
-                                        <option value="{{ old('service_id') }}" selected>
-                                            {{\App\Models\Service::find(old('service_id'))->name ?? 'Service inconnu'}}
-                                        </option>
-                                    @endif
-                                </select>
-                                {!! $errors->first('service_id', '<span class="error text-error">:message</span>') !!}
-                            </div>
-                        </div>
-                    </div>
+                {{-- Service --}}
+                <div class="col-md-6" id="service_container" style="display:none;">
+                    <label for="service_id" class="form-label">Service *</label>
+                    <select name="service_id" id="service_id" class="form-select @error('service_id') is-invalid @enderror">
+                        <option value="">Sélectionner un service</option>
+                        {{-- Les options seront chargées via JS --}}
+                    </select>
+                    @error('service_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
-                <!-- Données personnelles et administratives -->
-                <div class="row">
-                    <div class="col-md-6">
-                        @include('agents.partials.personal-data')
-                    </div>
-                    
-                    <div class="col-md-6">
-                        @include('agents.partials.administrative-data')
-                    </div>
-                </div>
-
-                <!-- Boutons de soumission -->
-                <div class="row">
-                    <div class="col-md-12">
-                        <a href="{{ URL::previous() }}" class="btn btn-danger btn-lg pull-left">
-                            <i class="fa fa-reply"></i> Retour
-                        </a>
-                        <button type="submit" class="btn btn-primary btn-lg pull-right">
-                            <i class="fa fa-save"></i> Enregistrer
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </section>
+            </div>
+        </div>
     </div>
+
+            <!-- Données de formulaire -->
+            <div class="row">
+                <div class="col-md-6">
+                    @include('agents.partials.personal-data')
+                </div>
+                 </div>
+                 <div class="row">
+                <div class="col-md-6">
+                    @include('agents.partials.administrative-data')
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{{ URL::previous() }}" class="btn btn-danger btn-lg pull-left">
+                        <i class="fa fa-reply"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg pull-right">
+                        <i class="fa fa-save"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
 @endsection
+
 @push('scripts.footer')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Éléments du DOM
-    const directionSelect = document.getElementById('direction-select');
-    const serviceSelect = document.getElementById('service-select');
-    const rattachementRadios = document.querySelectorAll('input[name="rattachement_type"]');
+    document.addEventListener('DOMContentLoaded', function () {
+        const rattachementTypeSelect = document.getElementById('rattachement_type');
+        const directionSelect = document.getElementById('direction_id');
+        const serviceContainer = document.getElementById('service_container');
+        const serviceSelect = document.getElementById('service_id');
 
-    // Gestion du changement de type de rattachement
-    rattachementRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const isServiceType = this.value === 'service';
-            document.getElementById('service-section').style.display = isServiceType ? 'block' : 'none';
-            document.getElementById('direction-section').style.display = this.value === 'direction' ? 'block' : 'none';
+        // Tous les services par direction, préchargés depuis Blade (ou tu peux aussi faire via AJAX)
+        const servicesByDirection = @json($servicesByDirection);
+
+        function updateForm() {
+            const type = rattachementTypeSelect.value;
+            if (type === 'direction') {
+                serviceContainer.style.display = 'none';
+                serviceSelect.removeAttribute('required');
+                serviceSelect.value = '';
+                directionSelect.setAttribute('required', 'required');
+            } else if (type === 'service') {
+                serviceContainer.style.display = 'block';
+                serviceSelect.setAttribute('required', 'required');
+                directionSelect.setAttribute('required', 'required');
+            } else {
+                serviceContainer.style.display = 'none';
+                serviceSelect.removeAttribute('required');
+                directionSelect.removeAttribute('required');
+            }
+        }
+
+        function updateServicesOptions() {
+            const directionId = directionSelect.value;
+            serviceSelect.innerHTML = '<option value="">Sélectionner un service</option>';
+            if (directionId && servicesByDirection[directionId]) {
+                servicesByDirection[directionId].forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service.id;
+                    option.textContent = service.name;
+                    if ("{{ old('service_id') }}" == service.id) {
+                        option.selected = true;
+                    }
+                    serviceSelect.appendChild(option);
+                });
+            }
+        }
+
+        rattachementTypeSelect.addEventListener('change', () => {
+            updateForm();
+            // Si on passe à service, on recharge la liste des services
+            if (rattachementTypeSelect.value === 'service') {
+                updateServicesOptions();
+            }
+        });
+
+        directionSelect.addEventListener('change', () => {
+            if (rattachementTypeSelect.value === 'service') {
+                updateServicesOptions();
+            }
+        });
+
+        // Initial setup au chargement page
+        updateForm();
+        if (rattachementTypeSelect.value === 'service') {
+            updateServicesOptions();
+        }
+
+
+
+        $('.datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            autoclose: true,
+            todayHighlight: true
         });
     });
-
-    // Gestion du changement de direction
-    directionSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const services = JSON.parse(selectedOption.dataset.services || '[]');
-        
-        // Vider et remplir le select des services
-        serviceSelect.innerHTML = '<option value="">Sélectionner un service</option>';
-        services.forEach(service => {
-            const option = document.createElement('option');
-            option.value = service.id;
-            option.textContent = service.name;
-            option.selected = service.id == "{{ old('service_id') }}";
-            serviceSelect.appendChild(option);
-        });
-    });
-
-    // Initialisation si ancienne valeur existante
-    if("{{ old('parent_direction_id') }}" && "{{ old('rattachement_type') }}" === 'service') {
-        directionSelect.dispatchEvent(new Event('change'));
-    }
-});
 </script>
 @endpush

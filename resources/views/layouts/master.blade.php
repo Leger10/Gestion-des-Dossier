@@ -31,7 +31,7 @@
   <header>
       <div class="page-wraper">
         <nav class="navbar-expanded-top bg-fonce shadow ">
-            <div class="container">-lg fix
+            <div class="container">
                 <div class="navbar-brand">
                     <a href="/"> <img src="{{ asset('img/armoirie.png')}}" alt="Burkina Faso">`</a>
                     <h5 class="text-white text-left"> <a href="/" style="color:#FFF;">Ministère de l'Administration Territoriale et de la Sécurité</a><br>

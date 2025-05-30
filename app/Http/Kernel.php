@@ -23,6 +23,13 @@ class Kernel extends HttpKernel
              'Superviseur' => \App\Http\Middleware\RedirectIfAuthenticated::class,
              'Agent' => \App\Http\Middleware\Utilisateur::class,
     ];
+// Ajoutez cette ligne dans la propriété $middlewareAliases
+protected $middlewareAliases = [
+    // ...
+    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'throttle.api' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+];
+
 
     /**
      * The application's route middleware groups.

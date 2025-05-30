@@ -1,3 +1,3 @@
 <div class="callout callout-info">
-    <h4>Gestion du personnel des collectivités territoriales de la DGFPT</h4>
+    <h4>Gestion du personnel de la direction générale des transmissions et de l'informatique</h4>
 </div>

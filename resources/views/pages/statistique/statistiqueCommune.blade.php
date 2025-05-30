@@ -1,11 +1,12 @@
-@extends('layouts.admin', ['titrePage' => 'DGTPT'])
+@extends('layouts.admin', ['titrePage' => 'DGTI'])
 @section('content')
 
     @include('partials.back-admin._nav')
     {{-- -----End menu--------- --}}
     <div class="content-wrapper">
     <section class="content-header">
-        <h1>Direction générale des collectivités territoriales</h1>
+        <h1>        Direction générale des transmissions et de l'informatique
+</h1>
         <ol class="breadcrumb">
             <li class="active"><i class="fa fa-home"></i> Accueil</li>
             <li class="active"><i class="fa fa-dashboard"></i> Dashbord</li>

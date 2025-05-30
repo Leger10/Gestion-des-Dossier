@@ -42,7 +42,7 @@ body {
   max-width: 1250px;
   margin: 0 auto;
   min-height: 100%;
-  box-shadow: #2E053A;
+  box-shadow: #1565c0;
   position: relative;
 }
 .layout-boxed {
@@ -213,7 +213,7 @@ a:focus {
 }
 .main-header #navbar-search-input.form-control:focus,
 .main-header #navbar-search-input.form-control:active {
-  border-color: rgba(216, 16, 16, 0.1);
+  border-color:#1565c0;
   background: rgba(255, 255, 255, 0.9);
 }
 .main-header #navbar-search-input.form-control::-moz-placeholder {

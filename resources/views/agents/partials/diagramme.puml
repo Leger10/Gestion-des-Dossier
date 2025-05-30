@@ -1,0 +1,9 @@
+@startuml
+actor Utilisateur
+actor Admin
+
+Utilisateur --> (Consulter profil)
+Utilisateur --> (S’inscrire)
+Admin --> (Gérer utilisateurs)
+Admin --> (Consulter rapports)
+@enduml

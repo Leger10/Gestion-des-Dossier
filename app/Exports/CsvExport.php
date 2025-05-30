@@ -30,7 +30,7 @@ class CsvExport implements FromQuery, WithHeadings, WithMapping
         switch ($this->exportType) {
             case 1: // Export par région (si applicable)
                 return $query->where('rattachement_type_id', 1)
-                    ->when($this->identifier !== 'TOUTES LES REGIONS', function($q) {
+                    ->when($this->identifier !== 'TOUTES LES Agents', function($q) {
                         $q->where('rattachement_zone_id', $this->identifier);
                     });
 

@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\ActeAdministratifController;
+use App\Http\Controllers\AffectationController;
+use App\Http\Controllers\AgentController as ControllersAgentController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\PageParametre\PageController;
-use App\Http\Controllers\ParametreAdmin\AgentController;
 use App\Http\Controllers\ServiceController;
 use App\Models\Agent;
 use App\Models\Province;
+use App\Http\Controllers\AgentController;
 use App\Models\Collectivite;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -15,8 +18,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CongeAbsenceController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EvaluationController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\FormationController;
 use App\Http\Controllers\ParametreAdmin\AdminAgentController;
+use App\Http\Controllers\RecompenseController;
+use App\Http\Controllers\SanctionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +43,18 @@ Auth::routes();
 
 Route::get('/accueil', [PageController::class, 'accueil'])->name('pages.front-end.accueil');
 
+Route::get('/dashboard/agents', [DashboardController::class, 'index'])->name('dashboard.agents');
+Route::get('/dashboard/agents/{agent}', [DashboardController::class, 'show'])->name('dashboard.agent.details');
 
+Route::prefix('admin/agents')->name('admin.agents.')->group(function() {
+    Route::get('/', [AdminAgentController::class, 'index'])->name('dashboard');
+    Route::get('/nouveau', [AdminAgentController::class, 'create'])->name('create');
+    Route::post('/', [AdminAgentController::class, 'store'])->name('store');
+    Route::get('/{agent}/edit', [AdminAgentController::class, 'edit'])->name('edit');
+     Route::put('/{agent}', [AdminAgentController::class, 'update'])->name('update');
+     Route::delete('/{agent}/delete', [AdminAgentController::class, 'destroy'])->name('agent.supp');
+Route::get('/agent/{agent}/restore', [AdminAgentController::class, 'restore'])->name('agent.restore');
+});
 
 Route::group(['middleware' => ['auth'] ], function(){
 
@@ -110,7 +130,11 @@ Route::get('/export-directions', [ExportController::class, 'exportDirection'])
 });
 // Routes agents
 Route::resource('agent', AdminAgentController::class);
+// Route::post('agent/store', AdminAgentController::class, 'store')->name('agent.add');
+Route::get('/agents/archives', [AdminAgentController::class, 'archive'])->name('agent.archive');
+// 
 
+Route::put('agent/{agent}/restore', [AdminAgentController::class, 'restore'])->name('agent.restore')->name('agent.restore.get');
 
 
 
@@ -145,6 +169,7 @@ Route::prefix('admin')->group(function() {
     Route::get('/regions', [PageController::class, 'mesDirectionsAdmin'])
          ->name('admin.regions');
 });
+Route::delete('/admin/agents/{agent}', [AdminAgentController::class, 'destroy'])->name('admin.agents.destroy');
 // routes/api.php
 Route::get('/directions/{direction}/services', [DirectionController::class, 'getServices']);
 
@@ -170,3 +195,15 @@ Route::get('/directions/{direction}/services', [DirectionController::class, 'get
 Route::get('/directions/{direction}/services', [ApiController::class, 'getServicesByDirection'])
      ->name('api.directions.services');
 
+
+// Routes RESTful
+Route::resource('agents',AgentController::class);
+Route::resource('actes_administratifs', ActeAdministratifController::class)->except(['index']);
+Route::resource('actes_administratifs', ActeAdministratifController::class);
+Route::resource('evaluations', EvaluationController::class);
+Route::resource('sanctions', SanctionController::class);
+Route::resource('recompenses', RecompenseController::class);
+Route::resource('conge_absences', CongeAbsenceController::class);
+Route::resource('formations', FormationController::class);
+Route::resource('affectations', AffectationController::class);
+Route::get('/agents/{agent}', [AgentController::class, 'show'])->name('agents.show');

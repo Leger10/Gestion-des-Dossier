@@ -43,11 +43,12 @@
             </a>
         </li>
         <li>
-            <a href="#">
-            <i class="fa fa-th"></i> <span>Personnels par directions</span>
+ 
+            <a href="{{ route('admin.agents.dashboard') }}">
+            <i class="fa fa-th"></i> <span>Liste des agents </span>
             </a>
         </li>
-        <li class="header">Tous le Personnel</li>
+        <li class="header">Tous les agents</li>
 
        {{--  @endif  --}}
         <li>
@@ -71,10 +72,12 @@
     </ul>
 </li>
  <li>
-            <a href="#">
-            <i class="fa fa-th"></i> <span>Dossiers Personnel</span>
-            </a>
-        </li>
+           <li class="{{ request()->routeIs('dashboard.agents') ? 'active' : '' }}">
+    <a href="{{ route('dashboard.agents') }}">
+        <i class="fa fa-th"></i> <span>Dossiers Personnel</span>
+    </a>
+</li>
+
         {{--  @if (Auth::user()->is_admin === 1 || Auth::user()->role === 'Lecteur')  --}}
         <li class="treeview">
                 <a href="#">

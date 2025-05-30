@@ -1,0 +1,13 @@
+@startuml
+class Utilisateur {
+  - nom : String
+  - motDePasse : String
+  + seConnecter() : Boolean
+}
+
+class Admin {
+  + gererUtilisateurs()
+}
+
+Utilisateur <|-- Admin
+@enduml

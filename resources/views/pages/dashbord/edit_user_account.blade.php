@@ -1,11 +1,12 @@
-@extends('layouts.admin', ['titrePage' => 'DGTPT'])
+@extends('layouts.admin', ['titrePage' => 'DGTI'])
 @section('content')
     @include('partials.back-admin._nav')
     {{-- -----End menu--------- --}}
     <div class="content-wrapper">
     <section class="content-header">
         <h1>
-        Direction générale des collectivités territoriales
+               Direction générale des transmissions et de l'informatique
+
         </h1>
         <ol class="breadcrumb">
         <li class="active"><i class="fa fa-edit"></i> <b><strong>Editer compte</strong></b></li>
@@ -43,7 +44,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    @if (Auth::user()->is_admin === 1 )
+                    {{--  @if (Auth::user()->is_admin === 1 )  --}}
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title">Statut du Compte</h3>
@@ -62,7 +63,7 @@
                         </div>
                         </div>
                     </div>
-                    @endif
+                    {{--  @endif  --}}
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title">Modifier votre mot de paase</h3>

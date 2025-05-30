@@ -98,4 +98,14 @@ class RegisterController extends Controller
         ]);
 
     }
+
+        public function showAdminUsers()
+{
+    // Récupérer tous les utilisateurs avec le rôle 'Administrateur'
+    $adminUsers = User::whereHas('role', function($query) {
+        $query->where('name', 'Administrateur');
+    })->get();
+
+    return view('dashbord.utilisateur', compact('adminUsers'));
+}
 }

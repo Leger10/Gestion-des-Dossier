@@ -85,7 +85,7 @@
             </li>
         {{--  @endif  --}}
         <li class="treeview">
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <a href="{{ route('/') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 <i class="fa fa-lock"></i>
                 <span>Déconnexion</span>
             </a>

@@ -24,4 +24,9 @@ public function agentsActifs()
     return $this->hasMany(Agent::class)->actifs();
 }
 
+public function children()
+{
+    return $this->hasMany(Direction::class, 'parent_id');
+}
+
 }

@@ -1,4 +1,4 @@
-@extends('layouts.admin', ['titrePage' => 'DGTPT'])
+@extends('layouts.admin', ['titrePage' => 'DGTI'])
 @section('content')
 
 <div id="app">

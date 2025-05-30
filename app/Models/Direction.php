@@ -21,4 +21,8 @@ public function agents()
 {
     return $this->hasMany(User::class);
 }
+public function children()
+{
+    return $this->hasMany(Direction::class, 'parent_id');
+}
 }
