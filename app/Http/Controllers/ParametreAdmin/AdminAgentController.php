@@ -19,12 +19,15 @@ public function index()
 {
     $data = $this->getBaseData();
 
+    // Nombre d'agents actifs (statut = 'actif')
+    $activeCount = Agent::where('statut', 'actif')->whereNull('deleted_at')->count();
     $data['agents'] = Agent::with('direction', 'service')->paginate(10); // ou n'importe quel nombre par page
 
     $data['directions'] = Direction::all();
     $data['services'] = Service::all(); // ✅ Ajoute cette ligne
     $data['rattachementTypes'] = \App\Models\RattachementType::all();
 
+    $data['activeCount'] = $activeCount;
     return view('pages.back-office-agent.dashboard', $data);
 }
 

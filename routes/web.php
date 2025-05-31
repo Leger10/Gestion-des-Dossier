@@ -210,3 +210,9 @@ Route::get('/agents/{agent}', [AgentController::class, 'show'])->name('agents.sh
 Route::put('/agents/{id}/restore', [AgentController::class, 'restore'])->name('agent.restore');
 // Ajoutez cette route pour récupérer les services
 Route::get('/get-services', [PageController::class, 'getServices'])->name('get.services');
+// Route pour voir les actes d'un agent spécifique
+Route::get('agents/{agent}/actes', [ActeAdministratifController::class, 'byAgent'])
+    ->name('agents.actes.index');
+
+    Route::get('/actes-administratifs/{id}/download', [ActeAdministratifController::class, 'download'])
+    ->name('actes_administratifs.download');

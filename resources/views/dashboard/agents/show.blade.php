@@ -119,11 +119,10 @@
                 class="btn btn-link text-decoration-none text-{{ $config['color'] }} px-2 small">
                 Voir tout
             </a>
-            <a href="{{ route($route . '.create', $agent) }}"
-                class="btn btn-sm btn-{{ $config['color'] }} rounded-pill px-3 shadow-sm d-flex align-items-center gap-2">
-                <i class="fas fa-plus fa-sm"></i>
-                <span>Ajouter</span>
-            </a>
+           {{-- Lien avec paramètre agent_id --}}
+<a href="{{ route('actes_administratifs.create', ['agent_id' => $agent->id]) }}" class="btn btn-primary">
+    Ajouter un acte 
+</a>
         </div>
     </div>
 </div>

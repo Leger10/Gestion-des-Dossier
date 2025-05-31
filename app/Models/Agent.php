@@ -211,4 +211,9 @@ class Agent extends Model
             $agent->save();
         });
     }
+    // Ajoutez cette méthode dans le modèle Agent
+public function documents()
+{
+    return $this->hasMany(Document::class);
+}
 }

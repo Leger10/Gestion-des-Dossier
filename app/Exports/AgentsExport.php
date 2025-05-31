@@ -39,24 +39,25 @@ public function collection()
             'Nom',
             'Prénom',
             'Sexe',
-            'Lieu Naissance',
-            'Date Naissance',
-            'Situation Matrimoniale',
-            'Niveau Recrutement',
-            'Date Prise Service',
-            'Emploi',
-            'Fonction',
+            'lieu_naissance',
+            'date_naissance',
+            'situation_matrimoniale',
+            'diplome_recrutement',
+            'date_prise_de_service',
+            'emploi',
+            'fonction',
             'Statut',
             'Catégorie',
-            'Grade',
-            'Classe',
-            'Echelon',
+            'grade',
+            'classe',
+            'indice',
+            'echelon',
             'Direction',
             'Service',
-            'Autorisation Absence',
-            'Demande Congé',
-            'Demande Explication',
-            'Félicitation/Reconnaissance',
+            'autorisation_absence',
+            'demande_conge',
+            'demande_explication',
+            'felicitation_reconnaissance',
             'Sanctions',
             'Autre Situation'
         ];
@@ -64,16 +65,16 @@ public function collection()
 
    public function map($agent): array
 {
-    // Vérifier que les relations sont bien chargées
-    $directionName = ($agent->relationLoaded('direction') && $agent->direction) 
-        ? $agent->direction->name 
-        : ($agent->service && $agent->service->relationLoaded('direction') 
-            ? $agent->service->direction->name 
-            : 'Non spécifié');
+    // Méthode 1: Direction directe de l'agent
+    $directionName = $agent->direction?->name;
     
-    $serviceName = ($agent->relationLoaded('service') && $agent->service)
-        ? $agent->service->name
-        : 'Non spécifié';
+    // Méthode 2: Direction via le service (si direction directe non disponible)
+    if (!$directionName && $agent->service && $agent->service->relationLoaded('direction')) {
+        $directionName = $agent->service->direction?->name;
+    }
+    
+    // Méthode 3: Valeur par défaut
+    $directionName = $directionName ?? 'Non spécifié';
 
     return [
         $agent->id,
@@ -81,9 +82,9 @@ public function collection()
         $agent->nom,
         $agent->prenom,
         $agent->sexe,
-        $agent->lieu_naiss,
-        $agent->date_naiss ? $agent->date_naiss->format('d/m/Y') : '',
-        $agent->situation_matri,
+        $agent->lieu_naissance,
+        $agent->date_naissance ? $agent->date_naissance->format('d/m/Y') : '',
+        $agent->situation_matrimoniale,
         $agent->niveau_recrutement,
         $agent->date_prise_de_service ? $agent->date_prise_de_service->format('d/m/Y') : '',
         $agent->emploi,
@@ -92,9 +93,10 @@ public function collection()
         $agent->categorie,
         $agent->grade,
         $agent->classe,
+        $agent->indice,
         $agent->echelon,
-        $directionName,
-        $serviceName,
+        $directionName, // Direction maintenant correctement récupérée
+        $agent->service?->name ?? 'Non spécifié',
         $agent->autorisation_absence,
         $agent->demande_conge,
         $agent->demande_explication,
@@ -103,7 +105,6 @@ public function collection()
         $agent->autre_situation
     ];
 }
-
     public function styles(Worksheet $sheet)
     {
         // Style pour les en-têtes

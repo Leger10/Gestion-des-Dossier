@@ -119,7 +119,7 @@ class PageController extends Controller
     public function index()
 {
     $totalDirection = Agent::count(); // total des agents
-
+ $activeCount = Agent::where('statut', 'actif')->count();
     // Directions et services avec compte agents
     $directions = Direction::withCount(['agents', 'services'])
         ->with(['services' => function($query) {
@@ -152,71 +152,73 @@ $serviceFemmes = $service->where('sexe', 'Feminin');
         'services',
         'hommesCount',
         'femmesCount',
-        'categoriesCount'
+        'categoriesCount',
+        'activeCount'
     ));
 }
 
+public function accueil()
+{
+    $agents = Agent::whereNull('deleted_at')->paginate(24);
 
-    public function accueil()
-    {
+    // Nombre d'agents actifs (statut = 'actif')
+    $activeCount = Agent::where('statut', 'actif')->whereNull('deleted_at')->count();
 
+    // Comptage des agents archivés
+    $archivedCount = Agent::where('is_archived', true)->whereNull('deleted_at')->count();
 
-        $agents = Agent::whereNull('deleted_at')->paginate(24);
+    // Nombre total d'agents non archivés
+    $totalActive = Agent::where('is_archived', false)->whereNull('deleted_at')->count();
 
+    // Tous les agents non supprimés
+    $agents = Agent::with(['direction', 'service'])
+        ->whereNull('deleted_at')
+        ->paginate(24);
 
-        // Comptage des agents archivés (une seule déclaration)
-        $archivedCount = Agent::where('is_archived', true)->count();
+    // Statistiques globales
+    $stats = [
+        'total' => $agents->total(),
+        'hommes' => $agents->where('sexe', 'Masculin')->count(),
+        'femmes' => $agents->where('sexe', 'Feminin')->count(),
+    ];
 
-        // Si besoin du nombre total d'agents actifs (alternative)
-        $totalActive = Agent::where('is_archived', false)->count();
-        // Tous les agents non supprimés
-        $agents = Agent::with(['direction', 'service'])
-            ->whereNull('deleted_at')
-            ->paginate(24);
+    // Tous les agents (non paginés) pour les stats détaillées
+    $allAgents = Agent::with(['direction', 'service'])->whereNull('deleted_at')->get();
 
-        // Statistiques globales
-        $stats = [
-            'total' => $agents->total(),
-            'hommes' => $agents->where('sexe', 'Masculin')->count(),
-            'femmes' => $agents->where('sexe', 'Feminin')->count(),
-        ];
+    // Agents par Direction
+    $directionAgents = $allAgents->filter(function ($agent) {
+        return $agent->direction !== null;
+    });
 
-        // Tous les agents (non paginés) pour les stats détaillées
-        $allAgents = Agent::with(['direction', 'service'])->whereNull('deleted_at')->get();
+    // Agents par Service
+    $serviceAgents = $allAgents->filter(function ($agent) {
+        return $agent->service !== null;
+    });
 
-        // Agents par Direction
-        $directionAgents = $allAgents->filter(function ($agent) {
-            return $agent->direction !== null;
-        });
+    // Statistiques DGTI
+    $directionHommes = $directionAgents->where('sexe', 'Masculin')->count();
+    $directionFemmes = $directionAgents->where('sexe', 'Feminin')->count();
+    $totalDirection = $directionAgents->count();
 
-        // Agents par Service
-        $serviceAgents = $allAgents->filter(function ($agent) {
-            return $agent->service !== null;
-        });
+    // Statistiques par Service
+    $serviceHommes = $serviceAgents->where('sexe', 'Masculin')->count();
+    $serviceFemmes = $serviceAgents->where('sexe', 'Feminin')->count();
+    $totalService = $serviceAgents->count();
 
-        // Statistiques DGTI
-        $directionHommes = $directionAgents->where('sexe', 'Masculin')->count();
-        $directionFemmes = $directionAgents->where('sexe', 'Feminin')->count();
-        $totalDirection = $directionAgents->count();
-
-        // Statistiques par Service
-        $serviceHommes = $serviceAgents->where('sexe', 'Masculin')->count();
-        $serviceFemmes = $serviceAgents->where('sexe', 'Feminin')->count();
-        $totalService = $serviceAgents->count();
-
-        return view('pages.back-office-agent.accueil', [
-            'agents' => $agents,
-            'stats' => $stats,
-            'totalDirection' => $totalDirection,
-            'directionHommes' => $directionHommes,
-            'directionFemmes' => $directionFemmes,
-            'totalService' => $totalService,
-            'serviceHommes' => $serviceHommes,
-            'serviceFemmes' => $serviceFemmes,
-            'directionAgents' => $directionAgents,
-            'serviceAgents' => $serviceAgents,
-        ]);
-    }
+    return view('pages.back-office-agent.accueil', [
+        'agents' => $agents,
+        'stats' => $stats,
+        'totalDirection' => $totalDirection,
+        'directionHommes' => $directionHommes,
+        'directionFemmes' => $directionFemmes,
+        'totalService' => $totalService,
+        'serviceHommes' => $serviceHommes,
+        'serviceFemmes' => $serviceFemmes,
+        'directionAgents' => $directionAgents,
+        'serviceAgents' => $serviceAgents,
+        'activeCount' => $activeCount, // Correction ici
+    ]);
+}
 
     protected function getEntityStats($rattachementType)
     {

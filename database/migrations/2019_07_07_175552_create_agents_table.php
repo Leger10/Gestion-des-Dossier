@@ -134,6 +134,22 @@ class CreateAgentsTable extends Migration
             $table->foreign('direction_id')->references('id')->on('directions')->onDelete('set null');
             $table->foreign('service_id')->references('id')->on('services')->onDelete('set null');
         });
+
+        // Ajoutez cette migration après les autres
+Schema::create('documents', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('agent_id');
+    $table->unsignedBigInteger('acte_administratif_id')->nullable();
+    $table->string('nom');
+    $table->string('chemin'); // Chemin du fichier dans storage
+    $table->string('type'); // Type de document: CV, diplôme, contrat, etc.
+    $table->string('taille'); // Taille du fichier
+    $table->text('description')->nullable();
+    $table->timestamps();
+
+    $table->foreign('agent_id')->references('id')->on('agents')->onDelete('cascade');
+    $table->foreign('acte_administratif_id')->references('id')->on('acte_administratifs')->onDelete('cascade');
+});
     }
 
     public function down()
