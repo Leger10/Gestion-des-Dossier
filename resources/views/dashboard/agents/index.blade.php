@@ -141,15 +141,15 @@
                                             <i class="fas fa-file-invoice fa-fw"></i>
                                         </a>
 
-                                        <a href="#" class="btn btn-icon btn-success rounded-circle action-btn"
+                                        {{--  <a href="#" class="btn btn-icon btn-success rounded-circle action-btn"
                                             data-bs-toggle="tooltip" title="Éditer l'agent">
                                             <i class="fas fa-pen fa-fw"></i>
-                                        </a>
+                                        </a>  --}}
 
-                                        <button type="button" class="btn btn-icon btn-danger rounded-circle action-btn"
+                                        {{--  <button type="button" class="btn btn-icon btn-danger rounded-circle action-btn"
                                             data-bs-toggle="tooltip" title="Archiver l'agent">
                                             <i class="fas fa-archive fa-fw"></i>
-                                        </button>
+                                        </button>  --}}
                                     </div>
                                 </td>
                             </tr>

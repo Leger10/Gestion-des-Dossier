@@ -207,3 +207,6 @@ Route::resource('conge_absences', CongeAbsenceController::class);
 Route::resource('formations', FormationController::class);
 Route::resource('affectations', AffectationController::class);
 Route::get('/agents/{agent}', [AgentController::class, 'show'])->name('agents.show');
+Route::put('/agents/{id}/restore', [AgentController::class, 'restore'])->name('agent.restore');
+// Ajoutez cette route pour récupérer les services
+Route::get('/get-services', [PageController::class, 'getServices'])->name('get.services');

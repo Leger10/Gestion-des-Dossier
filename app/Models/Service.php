@@ -17,7 +17,7 @@ public function direction()
 // ✅ Définir la relation avec les utilisateurs
 public function agents()
 {
-    return $this->hasMany(User::class); // ou Agent::class si tu as un modèle spécifique
+    return $this->hasMany(Agent::class); // ou Agent::class si tu as un modèle spécifique
 }
 public function agentsActifs()
 {

@@ -25,33 +25,59 @@ class ExportController extends Controller
         return Excel::download(new AgentsExport($agents), 'directions.xlsx');
     }
  
-
 public function exportAgents(Request $request)
-    {
-        $query = Agent::query()
-            ->with(['direction', 'service', 'statut']);
-
-        // Filtrage par type
+{
+    // Commencez par un simple test sans filtres
+    $query = Agent::query()->with(['direction', 'service']);
+    
+    // Debug: Afficher le nombre d'agents avant export
+    logger('Nombre d\'agents avant filtrage: ' . $query->count());
+    
+    // Appliquer les filtres seulement s'ils sont présents
+    if ($request->filled('type')) {
         switch ($request->type) {
             case 'direction':
-                $query->whereHas('direction', function($q) use ($request) {
-                    $q->where('id', $request->direction_id);
-                });
+                if ($request->filled('direction_id')) {
+                    $query->whereHas('direction', function($q) use ($request) {
+                        $q->where('id', $request->direction_id);
+                    });
+                }
                 break;
 
             case 'service':
-                $query->whereHas('service', function($q) use ($request) {
-                    $q->where('id', $request->service_id);
-                });
+                if ($request->filled('service_id')) {
+                    $query->whereHas('service', function($q) use ($request) {
+                        $q->where('id', $request->service_id);
+                    });
+                }
                 break;
 
             case 'statut':
-                $query->where('statut', $request->statut);
+                if ($request->filled('statut')) {
+                    $query->where('statut', $request->statut);
+                }
                 break;
         }
-
-        return Excel::download(new AgentsExport($query), 'agents.' . $request->format);
     }
+
+    // Debug: Afficher la requête SQL
+    logger('Requête SQL: ' . $query->toSql());
+    logger('Paramètres: ', $query->getBindings());
+    
+    $agents = $query->get();
+    
+    // Debug: Vérifier le nombre d'agents
+    logger('Nombre d\'agents après filtrage: ' . $agents->count());
+    
+    if ($agents->isEmpty()) {
+        // Si aucun agent, retourner avec un message
+        return back()->with('error', 'Aucun agent trouvé avec ces critères de filtrage');
+    }
+    
+    return Excel::download(new AgentsExport($agents), 'agents.' . $request->format);
+}
+
+
 
     public function exportByDirection(Direction $direction)
 {

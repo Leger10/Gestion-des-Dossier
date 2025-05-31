@@ -25,53 +25,49 @@ class PageDashbordController extends Controller
         'Antennes régionales transmissions et informatique' => 'ARTI'
     ];
 
-     public function accueil()
-{
-    // Récupération paginée des agents
-    $agents = Agent::whereNull('deleted_at')->paginate(24);
+    
+    public function accueil()
+    {
+        // Récupère tous les agents
+        $agents = Agent::all();
 
-    // Données de base
-    $direction = Agent::where('rattachement_type_id', 1)->whereNull('deleted_at')->get();
-    $service = Agent::where('rattachement_type_id', 2)->whereNull('deleted_at')->get();
+        // Préparer les directions uniques
+        $directionNames = $agents->pluck('direction')->unique()->filter()->values()->toArray();
 
-    // Statistiques globales
-    $totalAgents = $agents->total(); // Utilise ->total() pour le total de la pagination
-    $totalHommes = $agents->where('sexe', 'Masculin')->count();
-    $totalFemmes = $agents->where('sexe', 'Feminin')->count();
+        // Initialiser les stats
+        $directionRecap = [];
+        foreach ($directionNames as $dir) {
+            $agentsDir = $agents->where('direction', $dir);
+            $directionRecap[$dir] = [
+                'total' => $agentsDir->count(),
+                'hommes' => $agentsDir->where('sexe', 'Homme')->count(),
+                'femmes' => $agentsDir->where('sexe', 'Femme')->count(),
+            ];
+        }
 
-    // Statistiques par type
-    $totalDirection = $direction->count();
-    $directionHommes = $direction->where('sexe', 'Masculin')->count();
-    $directionFemmes = $direction->where('sexe', 'Feminin')->count();
+        $stats = [
+            'directionNames' => $directionNames,
+            'directionRecap' => $directionRecap,
 
-    $totalService = $service->count();
-    $serviceHommes = $service->where('sexe', 'Masculin')->count();
-    $serviceFemmes = $service->where('sexe', 'Feminin')->count();
+            'hommesTotal' => $agents->where('sexe', 'Homme')->count(),
+            'femmesTotal' => $agents->where('sexe', 'Femme')->count(),
+            'totalAgents' => $agents->count(),
 
-    // Si tu as une fonction pour grouper les agents par direction/service
-    $directionsServices = $this->getDirectionsWithServices();
+            'totalDirection' => $agents->whereNotNull('direction')->count(),
+            'hommesDirection' => $agents->where('sexe', 'Homme')->whereNotNull('direction')->count(),
+            'femmesDirection' => $agents->where('sexe', 'Femme')->whereNotNull('direction')->count(),
 
-    // Envoi à la vue
-    return view('pages.back-office-agent.accueil', [
-        'agents' => $agents,
-        'totalAgents' => $totalAgents,
-        'totalHommes' => $totalHommes,
-        'totalFemmes' => $totalFemmes,
+            'totalService' => $agents->whereNotNull('service')->count(),
+            'hommesService' => $agents->where('sexe', 'Homme')->whereNotNull('service')->count(),
+            'femmesService' => $agents->where('sexe', 'Femme')->whereNotNull('service')->count(),
 
-        'totalDirection' => $totalDirection,
-        'directionHommes' => $directionHommes,
-        'directionFemmes' => $directionFemmes,
+            // Répartition par catégorie et sexe
+            'directionCategories' => $this->groupByCategory($agents->whereNotNull('direction')),
+            'serviceCategories' => $this->groupByCategory($agents->whereNotNull('service')),
+        ];
 
-        'totalService' => $totalService,
-        'serviceHommes' => $serviceHommes,
-        'serviceFemmes' => $serviceFemmes,
-
-        'directionsServices' => $directionsServices,
-        'directionAgents' => $direction,
-        'serviceAgents' => $service,
-    ]);
-}
-
+        return view('pages.back-office-agent.accueil', compact('stats'));
+    }
 
     private function groupByCategory($agents)
     {

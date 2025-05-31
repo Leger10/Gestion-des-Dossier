@@ -90,6 +90,16 @@ $directions = Direction::with(['services' => function($query) {
                 return [$service->name => $service->agents_count];
             });
 
+            // Récupère toutes les directions avec leurs services et le nombre d'agents
+        $directions = Direction::with(['services' => function($query) {
+            $query->withCount('agents');
+        }])->withCount('agents')->get();
+
+        // Calcul des totaux
+        $totalDirections = Direction::count();
+        $totalServices = Service::count();
+        $totalAgents = Agent::count();
+
         return view('directions.index', compact(
             'directions',
             'totalDirections',
@@ -98,6 +108,7 @@ $directions = Direction::with(['services' => function($query) {
             'agentsParDirection',
             'agentsParService',
             'stats',
+            
         ));
     }
 

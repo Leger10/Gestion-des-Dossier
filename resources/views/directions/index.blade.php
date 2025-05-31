@@ -81,32 +81,39 @@
                 </div>
             </div>
 
-            <!-- Liste des Directions et Services -->
-            <div class="row">
-                @foreach($directions as $direction)
-                <div class="col-md-4">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">
-                                {{ $direction->name }}
-                                <small>Total agents: {{ $agentsParDirection[$direction->name] ?? 0 }}</small>
-                            </h3>
+     <div class="row">
+    @foreach($directions ?? [] as $direction)
+    <div class="col-md-4">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    {{ $direction->name ?? 'Nom inconnu' }}
+                    <small>Total agents: {{ ($agentsParDirection[$direction->name] ?? 0) }}</small>
+                </h3>
+            </div>
+            <div class="box-body">
+                <ul class="list-group" style="font-size: 14px;">
+                    @foreach($direction->services ?? [] as $service)
+                    <li class="list-group-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+                        <div style="flex: 1; min-width: 0; margin-right: 8px; display: flex; align-items: center;">
+                            <i class="fas fa-folder" style="margin-right: 8px; color: #4c8bf5;"></i>
+                            <div style="word-wrap: break-word; white-space: normal; line-height: 1.4;">
+                                {{ $service->name ?? 'Service sans nom' }}
+                            </div>
                         </div>
-                        <div class="box-body">
-                            <ul class="list-group">
-                                @foreach($direction->services as $service)
-                                <li class="list-group-item">
-                                    {{ $service->name }}
-                                    <span class="badge bg-blue pull-right">
-                                        {{ $agentsParService[$service->name] ?? 0 }} agents
-                                    </span>
-                                </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
+                        <span class="badge bg-blue" style="flex-shrink: 0; padding: 4px 8px; font-size: 13px; margin-left: 8px;">
+                            {{ $service->agents_count ?? 0 }} agents
+                        </span>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    @endforeach
+</div>
+</div>
+                
             </div>
         </section>
 

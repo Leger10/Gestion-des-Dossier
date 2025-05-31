@@ -708,7 +708,7 @@
                 datasets: [
                     {
                         label: 'Hommes',
-                        data: [5, 2, 6, 0],
+                        data: [5, 11, 57, 0],
                         backgroundColor: '#1a3a6c',
                         barThickness: 30
                     },

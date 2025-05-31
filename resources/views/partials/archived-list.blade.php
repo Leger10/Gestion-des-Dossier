@@ -35,28 +35,26 @@
                             <td>{{ $agent->prenom }}</td>
                             <td>{{ $agent->matricule }}</td>
                             <td>{{ $agent->deleted_at ? $agent->deleted_at->format('d/m/Y') : '' }}</td>
-                            <td>
-                                {{-- Exemple: bouton restaurer --}}
-                                <form action="{{ route('agent.restore', $agent->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit">Restaurer</button>
-                                </form>
+            <td class="text-nowrap">
+    <div class="d-inline-flex gap-2">
+        <form action="{{ route('agent.restore', $agent->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-sm btn-success" title="Restaurer">
+                <i class="fas fa-undo"></i>
+            </button>
+        </form>
 
-
-                                {{-- Exemple: bouton supprimer définitivement --}}
-                                <form action="{{ route('agent.destroy', $agent->id) }}" method="POST"
-                                    style="display:inline;"
-                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cet agent ?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        title="Supprimer définitivement">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+        <form action="{{ route('agent.destroy', $agent->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer définitivement"
+                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement cet agent ?');">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+    </div>
+</td>
                         @endforeach
                     </tbody>
                 </table>
@@ -73,3 +71,24 @@
     </section>
 </div>
 @endsection
+
+                                <style>
+                                    document.querySelectorAll('.delete-form').forEach(form=> {
+                                            form.addEventListener('submit', function(e) {
+                                                    if ( !confirm('Êtes-vous sûr de vouloir supprimer définitivement cet agent ?')) {
+                                                        e.preventDefault();
+                                                    }
+                                                });
+                                        });
+
+                                    .btn-sm {
+                                        padding: 0.25rem 0.5rem;
+                                        font-size: 0.875rem;
+                                        line-height: 1.5;
+                                        border-radius: 0.2rem;
+                                    }
+
+                                    .btn i {
+                                        margin-right: 3px;
+                                    }
+                                </style>

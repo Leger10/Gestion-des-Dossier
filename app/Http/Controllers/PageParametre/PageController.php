@@ -257,41 +257,81 @@ $serviceFemmes = $service->where('sexe', 'Feminin');
         return view('pages.back-office-agent.index', compact('listeAgent', 'id_zone'));
     }
 
-    public function mesDirectionsAdmin()
-    {
-        return $this->getAgentsByRattachement(1, 'directions.libelle');
+    public function getServices(Request $request)
+{
+    $directionId = $request->input('direction_id');
+    
+    $services = Service::where('direction_id', $directionId)
+        ->select('id', 'name')
+        ->get();
+    
+    return response()->json([
+        'services' => $services
+    ]);
+}
+
+protected function getAgentsByRattachement($typeId, $libelleField)
+{
+    $query = Agent::with(['userCreate', 'service'])
+        ->where('rattachement_type_id', $typeId)
+        ->whereNull('deleted_at');
+
+    if ($typeId === 1) {
+        // Utiliser 'name' au lieu de 'libelle'
+        $query->join('directions', 'agents.direction_id', '=', 'directions.id')
+            ->addSelect('directions.name as direction_name');
+    } else {
+        // Utiliser 'name' au lieu de 'libelle'
+        $query->join('services', 'agents.service_id', '=', 'services.id')
+            ->addSelect('services.name as service_name');
     }
 
-    public function mesServicesAdmin()
-    {
-        return $this->getAgentsByRattachement(2, 'services.libelle');
-    }
+    // Corriger le champ de tri
+    $orderField = $typeId === 1 ? 'directions.name' : 'services.name';
+    
+    $listeAgent = $query->join('users', 'agents.id_user_create', '=', 'users.id')
+        ->orderBy($orderField, 'asc') // Utiliser le champ corrigé
+        ->select('agents.*', 'users.name', 'users.email')
+        ->get();
 
-    protected function getAgentsByRattachement($typeId, $libelleField)
-    {
-        $query = Agent::with(['userCreate', 'service'])
-            ->where('rattachement_type_id', $typeId)
-            ->whereNull('deleted_at');
+    $id_zone = (string)$typeId;
 
-        if ($typeId === 1) {
-            $query->join('directions', 'agents.direction_id', '=', 'directions.id')
-                ->addSelect('directions.libelle as direction_libelle');
-        } else {
-            $query->join('services', 'agents.service_id', '=', 'services.id')
-                ->addSelect('services.libelle as service_libelle');
-        }
+    // Récupération des directions/services avec comptes
+    $directions = $typeId === 1 ? Direction::with(['services' => function($query) {
+        $query->withCount('agents');
+    }])->addSelect([
+        'agents_count' => Agent::selectRaw('count(*)')
+            ->whereColumn('direction_id', 'directions.id')
+    ])->get() : null;
 
-        $listeAgent = $query->join('users', 'agents.id_user_create', '=', 'users.id')
-            ->orderBy('agents.nom', 'asc')
-            ->select('agents.*', 'users.name', 'users.email')
-            ->get();
+    $services = $typeId === 2 ? Service::withCount('agents')->get() : null;
 
-        $id_zone = (string)$typeId;
-        $directions = $typeId === 1 ? Direction::all() : null;
-        $services = $typeId === 2 ? Service::all() : null;
+    // Calcul des totaux
+    $totalDirections = Direction::count();
+    $totalServices = Service::count();
+    $totalAgents = Agent::count();
 
-        return view('pages.back-office-agent.index', compact('listeAgent', 'id_zone', 'services', 'directions'));
-    }
+    return view('pages.back-office-agent.index', compact(
+        'listeAgent',
+        'id_zone',
+        'services',
+        'directions',
+        'totalDirections',
+        'totalServices',
+        'totalAgents'
+    ));
+}
+// Garder ces méthodes qui utilisent la méthode unique
+public function mesDirectionsAdmin()
+{
+    return $this->getAgentsByRattachement(1, 'directions.libelle');
+}
+
+public function mesServicesAdmin()
+{
+    return $this->getAgentsByRattachement(2, 'services.libelle');
+}
+
 
     public function ListeProvincesAjax($id)
     {

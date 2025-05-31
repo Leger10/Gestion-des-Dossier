@@ -28,52 +28,56 @@
                             </div>
                         </div>
                         
-                        <div class="box-body">
-                            <div class="row">
-                                @foreach($directions as $direction)
-                                <div class="col-md-4">
-                                    <div class="panel panel-primary">
-                                        <div class="panel-heading">
-                                            <h3 class="panel-title">
-                                                <i class="fa fa-building"></i> {{ $direction->name }}
-                                                <span class="badge bg-light-blue pull-right">
-                                                    {{ $direction->agents_count }} agents
-                                                </span>
-                                            </h3>
-                                        </div>
-                                        <div class="panel-body" style="padding:0;">
-                                            <ul class="list-group">
-                                                @forelse($direction->services as $service)
-                                                <li class="list-group-item">
-                                                    <i class="fa fa-folder"></i> {{ $service->name }}
-                                                    <span class="badge bg-blue pull-right">
-                                                        {{ $service->agents_count }} agents
-                                                    </span>
-                                                    <div class="pull-right" style="margin-right: 10px;">
-                                                        <a href="{{ route('export.service', $service->id) }}" 
-                                                           class="btn btn-xs btn-info" 
-                                                           title="Exporter ce service">
-                                                            <i class="fa fa-download"></i>
-                                                        </a>
-                                                    </div>
-                                                </li>
-                                                @empty
-                                                <li class="list-group-item text-muted">Aucun service</li>
-                                                @endforelse
-                                            </ul>
-                                        </div>
-                                        <div class="panel-footer">
-                                            <a href="{{ route('export.direction', $direction->id) }}" 
-                                               class="btn btn-xs btn-primary" 
-                                               title="Exporter cette direction">
-                                                <i class="fa fa-download"></i> Exporter la direction
-                                            </a>
-                                        </div>
-                                    </div>
+                      <div class="box-body">
+    <div class="row">
+        @foreach($directions as $direction)
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="fa fa-building"></i> {{ $direction->name }}
+                        <span class="badge bg-light-blue pull-right">
+                         {{ $direction->agents_count }} agents
+                        </span>
+                    </h3>
+                </div>
+                <div class="panel-body" style="padding:0;">
+                    <ul class="list-group">
+                        @forelse($direction->services as $service)
+                        <li class="list-group-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <i class="fa fa-folder"></i> {{ $service->name }}
                                 </div>
-                                @endforeach
+                                <div style="display: flex; align-items: center;">
+                                    <span class="badge bg-blue" style="margin-right: 10px;">
+                                       {{ $service->agents_count }} agents
+                                    </span>
+                                    <a href="{{ route('export.service', $service->id) }}" 
+                                       class="btn btn-xs btn-info" 
+                                       title="Exporter ce service">
+                                        <i class="fa fa-download"></i>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        </li>
+                        @empty
+                        <li class="list-group-item text-muted">Aucun service</li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="panel-footer">
+                    <a href="{{ route('export.direction', $direction->id) }}" 
+                       class="btn btn-xs btn-primary" 
+                       title="Exporter cette direction">
+                        <i class="fa fa-download"></i> Exporter la direction
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+</div>
                     </div>
                 </div>
             </div>
@@ -82,66 +86,67 @@
             <div class="modal fade" id="exportModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-           <form id="exportForm" method="GET" action="{{ route('export.agents') }}">
-                @csrf
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Options d'export</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Type d'export</label>
-                        <select class="form-control" name="type" id="exportType" required>
-                            <option value="all">Tous les agents</option>
-                            <option value="direction">Par direction</option>
-                            <option value="service">Par service</option>
-                            <option value="statut">Par statut</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="directionField" style="display:none;">
-                        <label>Direction</label>
-                        <select class="form-control" name="direction_id">
-                            @foreach($directions as $direction)
-                            <option value="{{ $direction->id }}">{{ $direction->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="serviceField" style="display:none;">
-                        <label>Service</label>
-                        <select class="form-control" name="service_id" required>
-                            <option value="">Choisir un service</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group" id="statutField" style="display:none;">
-                        <label>Statut</label>
-                        <select class="form-control" name="statut" required>
-                            <option value="Actif">Actif</option>
-                            <option value="Inactif">Inactif</option>
-                            <option value="En congé">En congé</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Format</label>
-                        <select class="form-control" name="format" required>
-                            <option value="xlsx">Excel (.xlsx)</option>
-                            <option value="csv">CSV (.csv)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-download"></i> Exporter
-                    </button>
-                </div>
-            </form>
+         <form id="exportForm" method="GET" action="{{ route('export.agents') }}">
+    @csrf
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Options d'export</h4>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label>Type d'export</label>
+            <select class="form-control" name="type" id="exportType" required>
+                <option value="all">Tous les agents</option>
+                <option value="direction">Par direction</option>
+                <option value="service">Par service</option>
+                <option value="statut">Par statut</option>
+            </select>
         </div>
+        
+        <div class="form-group" id="directionField" style="display:none;">
+            <label>Direction</label>
+            <select class="form-control" name="direction_id" id="directionSelect">
+                @foreach($directions as $direction)
+                <option value="{{ $direction->id }}">{{ $direction->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="form-group" id="serviceField" style="display:none;">
+            <label>Service</label>
+            <select class="form-control" name="service_id" id="serviceSelect">
+                <option value="">Choisir un service</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="statutField" style="display:none;">
+            <label>Statut</label>
+            <select class="form-control" name="statut">
+                <option value="Actif">Actif</option>
+                <option value="Inactif">Inactif</option>
+                <option value="En congé">En congé</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Format</label>
+            <select class="form-control" name="format" required>
+                <option value="xlsx">Excel (.xlsx)</option>
+                <option value="csv">CSV (.csv)</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fa fa-download"></i> Exporter
+        </button>
+    </div>
+</form>
+        </div>
+        
     </div>
 </div>
         </section>

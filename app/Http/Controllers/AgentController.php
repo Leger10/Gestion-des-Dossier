@@ -112,4 +112,14 @@ class AgentController extends Controller
 
         return redirect()->route('agents.index')->with('success', 'Agent supprimé avec succès.');
     }
+
+    
+    public function restore($id)
+{
+    $agent = Agent::withTrashed()->findOrFail($id);
+    $agent->restore();
+
+    return redirect()->back()->with('success', 'Agent restauré avec succès.');
+}
+
 }

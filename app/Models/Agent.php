@@ -17,7 +17,6 @@ class Agent extends Model
         'date_naissance',
         'lieu_naissance',
         'sexe',
-
         'situation_matrimoniale',
         'matricule',
         'nationalite',

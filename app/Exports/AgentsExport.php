@@ -9,6 +9,8 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 class AgentsExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
@@ -21,15 +23,13 @@ class AgentsExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         $this->query = $query;
     }
 
-    public function query()
-    {
-        return $this->query;
-    }
+public function collection()
+{
+    return $this->agents instanceof Collection ? $this->agents : collect();
+}
 
-    public function collection()
-    {
-        return $this->agents;
-    }
+
+    
 
     public function headings(): array
     {
@@ -62,36 +62,47 @@ class AgentsExport implements FromCollection, WithHeadings, WithMapping, ShouldA
         ];
     }
 
-    public function map($agent): array
-    {
-        return [
-            $agent->id,
-            $agent->matricule,
-            $agent->nom,
-            $agent->prenom,
-            $agent->sexe,
-            $agent->lieu_naiss,
-            optional($agent->date_naiss)->format('d/m/Y'),
-            $agent->situation_matri,
-            $agent->niveau_recrutement,
-            optional($agent->date_prise_de_service)->format('d/m/Y'),
-            $agent->emploi,
-            $agent->fonction,
-            $agent->statut,
-            $agent->categorie,
-            $agent->grade,
-            $agent->classe,
-            $agent->echelon,
-            $agent->direction->name ?? 'Non spécifié',
-            $agent->service->name ?? 'Non spécifié',
-            $agent->autorisation_absence,
-            $agent->demande_conge,
-            $agent->demande_explication,
-            $agent->felicitation_reconnaissance,
-            $agent->sanctions,
-            $agent->autre_situation
-        ];
-    }
+   public function map($agent): array
+{
+    // Vérifier que les relations sont bien chargées
+    $directionName = ($agent->relationLoaded('direction') && $agent->direction) 
+        ? $agent->direction->name 
+        : ($agent->service && $agent->service->relationLoaded('direction') 
+            ? $agent->service->direction->name 
+            : 'Non spécifié');
+    
+    $serviceName = ($agent->relationLoaded('service') && $agent->service)
+        ? $agent->service->name
+        : 'Non spécifié';
+
+    return [
+        $agent->id,
+        $agent->matricule,
+        $agent->nom,
+        $agent->prenom,
+        $agent->sexe,
+        $agent->lieu_naiss,
+        $agent->date_naiss ? $agent->date_naiss->format('d/m/Y') : '',
+        $agent->situation_matri,
+        $agent->niveau_recrutement,
+        $agent->date_prise_de_service ? $agent->date_prise_de_service->format('d/m/Y') : '',
+        $agent->emploi,
+        $agent->fonction,
+        $agent->statut,
+        $agent->categorie,
+        $agent->grade,
+        $agent->classe,
+        $agent->echelon,
+        $directionName,
+        $serviceName,
+        $agent->autorisation_absence,
+        $agent->demande_conge,
+        $agent->demande_explication,
+        $agent->felicitation_reconnaissance,
+        $agent->sanctions,
+        $agent->autre_situation
+    ];
+}
 
     public function styles(Worksheet $sheet)
     {
